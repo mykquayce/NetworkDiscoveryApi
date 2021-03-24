@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace NetworkDiscoveryApi.Services.Tests.Fixtures
 {
@@ -15,8 +16,9 @@ namespace NetworkDiscoveryApi.Services.Tests.Fixtures
 				.Get<Helpers.SSH.Services.Concrete.SSHService.Config>();
 
 			var sshService = new Helpers.SSH.Services.Concrete.SSHService(config);
+			var cachingService = new Services.Concrete.CachingService<IList<Models.DhcpEntry>>();
 
-			RouterService = new Concrete.RouterService(sshService);
+			RouterService = new Concrete.RouterService(sshService, cachingService);
 		}
 
 		public IRouterService RouterService { get; }

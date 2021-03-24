@@ -5,6 +5,6 @@ namespace NetworkDiscoveryApi.Services
 {
 	public interface IRouterService : IDisposable
 	{
-		IAsyncEnumerable<Helpers.Networking.Models.DhcpEntry> GetDhcpLeasesAsync();
+		IAsyncEnumerable<Models.DhcpEntry> GetDhcpLeasesAsync();
 	}
 }

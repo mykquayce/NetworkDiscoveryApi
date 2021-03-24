@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
 
 namespace NetworkDiscoveryApi.WebApplication
 {
@@ -23,6 +24,7 @@ namespace NetworkDiscoveryApi.WebApplication
 				.Configure<Helpers.SSH.Services.Concrete.SSHService.Config>(Configuration.GetSection("Router"));
 
 			services
+				.AddSingleton<Services.ICachingService<IList<Models.DhcpEntry>>, Services.Concrete.CachingService<IList<Models.DhcpEntry>>>()
 				.AddTransient<Helpers.SSH.Services.ISSHService, Helpers.SSH.Services.Concrete.SSHService>()
 				.AddTransient<Services.IRouterService, Services.Concrete.RouterService>();
 

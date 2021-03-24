@@ -1,8 +1,5 @@
-﻿using Helpers.Networking.Models;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -20,21 +17,20 @@ namespace NetworkDiscoveryApi.Services.Tests
 		[Fact]
 		public async Task Cache()
 		{
-			var before = await _routerService.GetDhcpLeasesAsync().ToListAsync();
+			IList<Models.DhcpEntry> before = await _routerService.GetDhcpLeasesAsync().ToListAsync();
+
+			using var cache = new Services.Concrete.CachingService<IList<Models.DhcpEntry>>();
 
 			Assert.NotNull(before);
 			Assert.NotEmpty(before);
 
-			var cache = MemoryCache.Default;
+			cache.Set(before);
 
-			var policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.UtcNow.AddHours(1), };
+			var ok = cache.TryGet(out var after);
 
-			cache.Set("DhcpEntries", before, policy);
-
-			var after = cache["DhcpEntries"] as IReadOnlyCollection<DhcpEntry>;
-
+			Assert.True(ok);
 			Assert.NotNull(after);
-			Assert.NotEmpty(after);
+			Assert.Same(before, after);
 		}
 	}
 }

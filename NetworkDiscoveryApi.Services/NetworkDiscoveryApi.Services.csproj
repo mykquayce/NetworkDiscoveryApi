@@ -7,6 +7,12 @@
 
   <ItemGroup>
     <PackageReference Include="Helpers.SSH" Version="1.0.1" />
+    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="6.0.0-preview.2.21154.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NetworkDiscoveryApi.Models\NetworkDiscoveryApi.Models.csproj" />
   </ItemGroup>
 
 </Project>
