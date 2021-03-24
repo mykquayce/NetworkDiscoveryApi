@@ -24,16 +24,7 @@ namespace NetworkDiscoveryApi.WebApplication.Controllers
 
 			if (entries.Any())
 			{
-				var query = from e in entries
-							select new
-							{
-								expiration = e.Expiration.ToString("O"),
-								ip = e.IPAddress.ToString(),
-								e.HostName,
-								mac = e.PhysicalAddress.ToString().ToLowerInvariant(),
-							};
-
-				return Ok(query);
+				return Ok(entries.Select(e => (Models.DhcpEntry)e));
 			}
 
 			return NotFound();

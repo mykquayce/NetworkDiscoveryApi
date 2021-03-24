@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NetworkDiscoveryApi.Models\NetworkDiscoveryApi.Models.csproj" />
     <ProjectReference Include="..\NetworkDiscoveryApi.Services\NetworkDiscoveryApi.Services.csproj" />
   </ItemGroup>
 
