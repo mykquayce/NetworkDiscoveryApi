@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.218
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkDiscoveryApi.WebApplication", "NetworkDiscoveryApi.WebApplication\NetworkDiscoveryApi.WebApplication.csproj", "{2DA92301-9990-4ABA-9133-4DFBFCE73C9A}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.Services.Tests", "NetworkDiscoveryApi.Services.Tests\NetworkDiscoveryApi.Services.Tests.csproj", "{AED6C172-B5D4-434D-AE60-E30DC4115EC3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.Services", "NetworkDiscoveryApi.Services\NetworkDiscoveryApi.Services.csproj", "{1A4953DF-0AA6-4E21-AFF2-3BCF027A2001}"
@@ -26,6 +28,10 @@ Global
 		{1A4953DF-0AA6-4E21-AFF2-3BCF027A2001}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A4953DF-0AA6-4E21-AFF2-3BCF027A2001}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A4953DF-0AA6-4E21-AFF2-3BCF027A2001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DA92301-9990-4ABA-9133-4DFBFCE73C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DA92301-9990-4ABA-9133-4DFBFCE73C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DA92301-9990-4ABA-9133-4DFBFCE73C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DA92301-9990-4ABA-9133-4DFBFCE73C9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
