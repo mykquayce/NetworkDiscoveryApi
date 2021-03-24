@@ -1,30 +1,17 @@
-using Microsoft.Extensions.Configuration;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace NetworkDiscoveryApi.Services.Tests
 {
-	public sealed class RouterServiceTests : IDisposable
+	public sealed class RouterServiceTests : IClassFixture<Fixtures.RouterServiceFixture>
 	{
 		private readonly IRouterService _sut;
 
-		public RouterServiceTests()
+		public RouterServiceTests(Fixtures.RouterServiceFixture fixture)
 		{
-			var configuration = new ConfigurationBuilder()
-				.AddUserSecrets(this.GetType().Assembly)
-				.Build();
-
-			var config = configuration.GetSection("Router")
-				.Get<Helpers.SSH.Services.Concrete.SSHService.Config>();
-
-			var sshService = new Helpers.SSH.Services.Concrete.SSHService(config);
-
-			_sut = new Concrete.RouterService(sshService);
+			_sut = fixture.RouterService;
 		}
-
-		public void Dispose() => _sut.Dispose();
 
 		[Fact]
 		public async Task GetDhcpLeases()
