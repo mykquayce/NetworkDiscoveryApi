@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  api:
+    image: eassbhhtgu/networkdiscoveryapi:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+
+    ports:
+    - 34785:80/tcp
+    secrets:
+    - source: Host
+    - source: Port
+    - source: Username
+    - source: Password
+
+secrets:
+  Host:
+    external: true
+    name: RouterHost
+  Port:
+    external: true
+    name: RouterPort
+  Username:
+    external: true
+    name: RouterUsername
+  Password:
+    external: true
+    name: RouterPassword

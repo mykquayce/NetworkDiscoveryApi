@@ -11,14 +11,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.Service
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{16F2CC48-E8EE-482D-BB9F-11E91F35DAFE}"
 	ProjectSection(SolutionItems) = preProject
+		build.sh = build.sh
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.WebApplication.Tests", "NetworkDiscoveryApi.WebApplication.Tests\NetworkDiscoveryApi.WebApplication.Tests.csproj", "{E07AB861-FFD4-4CE2-A0DD-241F1CDE8B50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkDiscoveryApi.Models", "NetworkDiscoveryApi.Models\NetworkDiscoveryApi.Models.csproj", "{F3B4A709-239B-42DD-8523-0414225D70A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.Models", "NetworkDiscoveryApi.Models\NetworkDiscoveryApi.Models.csproj", "{F3B4A709-239B-42DD-8523-0414225D70A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkDiscoveryApi.Models.Tests", "NetworkDiscoveryApi.Models.Tests\NetworkDiscoveryApi.Models.Tests.csproj", "{1EA0F74A-F3EF-49F0-B6CC-25D83342D536}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.Models.Tests", "NetworkDiscoveryApi.Models.Tests\NetworkDiscoveryApi.Models.Tests.csproj", "{1EA0F74A-F3EF-49F0-B6CC-25D83342D536}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

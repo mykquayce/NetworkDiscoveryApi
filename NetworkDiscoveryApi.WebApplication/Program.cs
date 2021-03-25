@@ -17,7 +17,8 @@ namespace NetworkDiscoveryApi.WebApplication
 				.ConfigureAppConfiguration((context, configBuilder) =>
 				{
 					configBuilder
-						.AddUserSecrets(typeof(Program).Assembly);
+						.AddDockerSecrets(optional: true, reloadOnChange: true)
+						.AddUserSecrets(typeof(Program).Assembly, optional: true, reloadOnChange: true);
 				});
 
 			hostBuilder
