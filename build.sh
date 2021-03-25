@@ -1,5 +1,11 @@
 #! /bin/bash
 
+dotnet build ./NetworkDiscoveryApi.Models/
+dotnet pack ./NetworkDiscoveryApi.Models/ --output ./nupkg
+
+dotnet nuget push ./nupkg/*.nupkg --api-key $NuGetServerApiKey --source http://nuget | \
+	head --lines=3
+
 for image in \
 	mcr.microsoft.com/dotnet/aspnet:6.0 \
 	mcr.microsoft.com/dotnet/sdk:6.0
@@ -13,7 +19,7 @@ docker stack ls | tail --line +2 | findstr networkdiscoveryapi
 
 if [ $? -ne 0 ]; then
 	# create one
-	docker stack deploy --compose-file ./docker-compose.yml 
+	docker stack deploy --compose-file ./docker-compose.yml networkdiscoveryapi
 else
 	# update it
 	docker service ls | \
