@@ -1,24 +1,22 @@
-# NetworkDiscoveryApi
-## Docker
+# Network Discovery API
+A simple API to query your router's DHCP data.  It gets the data by reading the `/tmp/dhcp.leases` file via SSH.
+
+6 configs:
+1. `Router:Host` (defaults to `localhost`)
+1. `Router:Port` (defaults to `22`)
+1. `Router:Username` (defaults to `root`)
+1. `Router:Password` (defaults to blank)
+1. `Router:PathToPrivateKey` (defaults to blank)
+1. `Router:PathToPublicKey` (defaults to blank)
+
+These can be set in the `appsettings.json` or user secrets with ID `ed0c99a4-1a72-46ee-be0b-6051c416da5a`...
 ```bash
-echo -n 192.168.1.10 | docker secret create RouterHost -
-echo -n 22 | docker secret create RouterPort -
-echo -n root | docker secret create RouterUsername -
-echo -n ... | docker secret create RouterPassword -
-```
-## Web Api
-`NetworkDiscoveryApi.WebApplication` user secrets
-```bash
-dotnet user-secrets set Host 192.168.1.10 --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
-dotnet user-secrets set Port 22 --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
-dotnet user-secrets set Username root --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
-dotnet user-secrets set Password ... --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
+dotnet user-secrets set Router:Host localhost --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
+dotnet user-secrets set Router:Port 22 --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
+dotnet user-secrets set Router:Username root --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
+dotnet user-secrets set Router:Password ... --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
+dotnet user-secrets set Router:PathToPrivateKey ... --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
+dotnet user-secrets set Router:PathToPublicKey ... --id ed0c99a4-1a72-46ee-be0b-6051c416da5a
 ```
 ## Tests
-`NetworkDiscoveryApi.Services.Tests` has it's own user secrets
-```bash
-dotnet user-secrets set Host 192.168.1.10 --id b04ee387-25ec-4e18-87df-9e75e138c884
-dotnet user-secrets set Port 22 --id b04ee387-25ec-4e18-87df-9e75e138c884
-dotnet user-secrets set Username root --id b04ee387-25ec-4e18-87df-9e75e138c884
-dotnet user-secrets set Password ... --id b04ee387-25ec-4e18-87df-9e75e138c884
-```
+`NetworkDiscoveryApi.WebApplication.Tests` loads its config from user secrets ID `1c40e017-4811-4ef9-b07e-1f3409df0453`
