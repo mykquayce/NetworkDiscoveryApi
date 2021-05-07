@@ -9,21 +9,11 @@ services:
     ports:
     - 34785:80/tcp
     secrets:
-    - source: Host
-    - source: Port
-    - source: Username
-    - source: Password
+    - source: id_rsa
+    - source: id_rsa.pub
 
 secrets:
-  Host:
-    external: true
-    name: RouterHost
-  Port:
-    external: true
-    name: RouterPort
-  Username:
-    external: true
-    name: RouterUsername
-  Password:
-    external: true
-    name: RouterPassword
+  id_rsa:
+    file: ${USERPROFILE}\.ssh\id_rsa
+  id_rsa.pub:
+    file: ${USERPROFILE}\.ssh\id_rsa.pub
