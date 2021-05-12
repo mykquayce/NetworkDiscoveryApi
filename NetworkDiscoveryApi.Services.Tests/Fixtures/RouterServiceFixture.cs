@@ -13,7 +13,7 @@ namespace NetworkDiscoveryApi.Services.Tests.Fixtures
 		{
 			var sshServiceMock = new Mock<Helpers.SSH.Services.ISSHService>();
 
-			var entries = new Helpers.Networking.Models.DhcpEntry[1]
+			var entries = new Helpers.Networking.Models.DhcpLease[1]
 			{
 				new(DateTime.MaxValue, PhysicalAddress.None, IPAddress.None, "localhost", "home"),
 			};

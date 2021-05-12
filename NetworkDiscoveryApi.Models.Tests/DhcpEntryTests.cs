@@ -46,7 +46,7 @@ namespace NetworkDiscoveryApi.Models.Tests
 
 			Assert.NotNull(before);
 
-			var after = (Helpers.Networking.Models.DhcpEntry)before!;
+			var after = (Helpers.Networking.Models.DhcpLease)before!;
 
 			var before2 = (DhcpEntry)after;
 

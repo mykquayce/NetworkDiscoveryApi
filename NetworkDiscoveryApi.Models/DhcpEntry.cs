@@ -11,7 +11,7 @@ namespace NetworkDiscoveryApi.Models
 
 		public DhcpEntry() : this(default, default, default, default, default) { }
 
-		public static explicit operator DhcpEntry(Helpers.Networking.Models.DhcpEntry other)
+		public static explicit operator DhcpEntry(Helpers.Networking.Models.DhcpLease other)
 		{
 			Guard.Argument(() => other).NotNull();
 			Guard.Argument(() => other.Expiration).NotDefault();
@@ -28,7 +28,7 @@ namespace NetworkDiscoveryApi.Models
 			};
 		}
 
-		public static explicit operator Helpers.Networking.Models.DhcpEntry(DhcpEntry other)
+		public static explicit operator Helpers.Networking.Models.DhcpLease(DhcpEntry other)
 		{
 			Guard.Argument(() => other).NotNull();
 			Guard.Argument(() => other.Expiration!).NotNull().NotEmpty().NotWhiteSpace().Matches(@"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{7}Z$");
@@ -39,7 +39,7 @@ namespace NetworkDiscoveryApi.Models
 			var physicalAddress = System.Net.NetworkInformation.PhysicalAddress.Parse(other.PhysicalAddress);
 			var ipAddress = System.Net.IPAddress.Parse(other.IPAddress!);
 
-			return new Helpers.Networking.Models.DhcpEntry(expiration, physicalAddress, ipAddress, other.HostName, other.Identifier);
+			return new(expiration, physicalAddress, ipAddress, other.HostName, other.Identifier);
 		}
 	}
 }
