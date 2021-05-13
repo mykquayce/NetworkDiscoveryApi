@@ -22,7 +22,7 @@ namespace NetworkDiscoveryApi.Services.Tests.Fixtures
 				.Setup(s => s.GetDhcpLeasesAsync())
 				.Returns(entries.ToAsyncEnumerable());
 
-			var cachingService = new Services.Concrete.CachingService<IList<Models.DhcpEntry>>();
+			var cachingService = new Services.Concrete.CachingService<IList<Helpers.Networking.Models.DhcpLease>>();
 
 			RouterService = new Concrete.RouterService(sshServiceMock.Object, cachingService);
 		}

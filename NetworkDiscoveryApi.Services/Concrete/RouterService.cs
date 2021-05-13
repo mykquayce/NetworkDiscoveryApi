@@ -1,33 +1,26 @@
 ﻿using Dawn;
 using Helpers.SSH.Services;
-using NetworkDiscoveryApi.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NetworkDiscoveryApi.Services.Concrete
 {
 	public class RouterService : IRouterService
 	{
 		private readonly ISSHService _sshService;
-		private readonly ICachingService<IList<DhcpEntry>> _cachingService;
+		private readonly ICachingService<IList<Helpers.Networking.Models.DhcpLease>> _cachingService;
 
-		public RouterService(ISSHService sshService, ICachingService<IList<DhcpEntry>> cachingService)
+		public RouterService(ISSHService sshService, ICachingService<IList<Helpers.Networking.Models.DhcpLease>> cachingService)
 		{
 			_sshService = Guard.Argument(() => sshService).NotNull().Value;
 			_cachingService = Guard.Argument(() => cachingService).NotNull().Value;
 		}
 
-		public async IAsyncEnumerable<DhcpEntry> GetDhcpLeasesAsync()
+		public async IAsyncEnumerable<Helpers.Networking.Models.DhcpLease> GetDhcpLeasesAsync()
 		{
 			if (!_cachingService.TryGet(out var entries))
 			{
-				entries = new List<DhcpEntry>();
-
-				await foreach (var item in _sshService.GetDhcpLeasesAsync())
-				{
-					var entry = (DhcpEntry)item;
-
-					entries.Add(entry);
-				}
+				entries = await _sshService.GetDhcpLeasesAsync().ToListAsync();
 
 				_cachingService.Set(entries);
 			}

@@ -24,7 +24,7 @@ namespace NetworkDiscoveryApi.WebApplication.Controllers
 
 			if (entries.Any())
 			{
-				return Ok(entries.Select(e => (Models.DhcpEntry)e));
+				return Ok(entries);
 			}
 
 			return NotFound();

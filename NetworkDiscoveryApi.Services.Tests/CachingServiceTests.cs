@@ -17,9 +17,9 @@ namespace NetworkDiscoveryApi.Services.Tests
 		[Fact]
 		public async Task Cache()
 		{
-			IList<Models.DhcpEntry> before = await _routerService.GetDhcpLeasesAsync().ToListAsync();
+			IList<Helpers.Networking.Models.DhcpLease> before = await _routerService.GetDhcpLeasesAsync().ToListAsync();
 
-			using var cache = new Services.Concrete.CachingService<IList<Models.DhcpEntry>>();
+			using var cache = new Services.Concrete.CachingService<IList<Helpers.Networking.Models.DhcpLease>>();
 
 			Assert.NotNull(before);
 			Assert.NotEmpty(before);

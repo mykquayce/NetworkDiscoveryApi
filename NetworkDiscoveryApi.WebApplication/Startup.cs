@@ -24,7 +24,7 @@ namespace NetworkDiscoveryApi.WebApplication
 				.Configure<Helpers.SSH.Services.Concrete.SSHService.Config>(Configuration.GetSection("Router"));
 
 			services
-				.AddSingleton<Services.ICachingService<IList<Models.DhcpEntry>>, Services.Concrete.CachingService<IList<Models.DhcpEntry>>>()
+				.AddSingleton<Services.ICachingService<IList<Helpers.Networking.Models.DhcpLease>>, Services.Concrete.CachingService<IList<Helpers.Networking.Models.DhcpLease>>>()
 				.AddTransient<Helpers.SSH.Services.ISSHService, Helpers.SSH.Services.Concrete.SSHService>()
 				.AddTransient<Services.IRouterService, Services.Concrete.RouterService>();
 
