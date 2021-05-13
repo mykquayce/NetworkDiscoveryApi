@@ -19,10 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.WebApplication.Tests", "NetworkDiscoveryApi.WebApplication.Tests\NetworkDiscoveryApi.WebApplication.Tests.csproj", "{E07AB861-FFD4-4CE2-A0DD-241F1CDE8B50}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.Models", "NetworkDiscoveryApi.Models\NetworkDiscoveryApi.Models.csproj", "{F3B4A709-239B-42DD-8523-0414225D70A8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.Models.Tests", "NetworkDiscoveryApi.Models.Tests\NetworkDiscoveryApi.Models.Tests.csproj", "{1EA0F74A-F3EF-49F0-B6CC-25D83342D536}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,14 +41,6 @@ Global
 		{E07AB861-FFD4-4CE2-A0DD-241F1CDE8B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E07AB861-FFD4-4CE2-A0DD-241F1CDE8B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E07AB861-FFD4-4CE2-A0DD-241F1CDE8B50}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3B4A709-239B-42DD-8523-0414225D70A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3B4A709-239B-42DD-8523-0414225D70A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3B4A709-239B-42DD-8523-0414225D70A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3B4A709-239B-42DD-8523-0414225D70A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1EA0F74A-F3EF-49F0-B6CC-25D83342D536}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1EA0F74A-F3EF-49F0-B6CC-25D83342D536}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1EA0F74A-F3EF-49F0-B6CC-25D83342D536}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1EA0F74A-F3EF-49F0-B6CC-25D83342D536}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

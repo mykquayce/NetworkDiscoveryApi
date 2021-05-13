@@ -10,8 +10,4 @@
     <PackageReference Include="System.Runtime.Caching" Version="6.0.0-preview.3.21201.4" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NetworkDiscoveryApi.Models\NetworkDiscoveryApi.Models.csproj" />
-  </ItemGroup>
-
 </Project>
