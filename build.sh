@@ -1,11 +1,5 @@
 #! /bin/bash
 
-dotnet build ./NetworkDiscoveryApi.Models/ --configuration Release
-dotnet pack ./NetworkDiscoveryApi.Models/ --output ./nupkg
-
-dotnet nuget push ./nupkg/*.nupkg --api-key $NuGetServerApiKey --source http://nuget | \
-	head --lines=3
-
 # pull images used by Dockerfile
 cat ./Dockerfile | grep --ignore-case ^from | awk '{system("docker pull " $2)}'
 
@@ -14,6 +8,9 @@ cat ./docker-compose.yml | grep --ignore-case image: | awk '{system("docker pull
 
 # build
 docker build --tag eassbhhtgu/networkdiscoveryapi:latest .
+
+# push
+docker push eassbhhtgu/networkdiscoveryapi:latest
 
 # is there a stack running?
 docker stack ls | tail --line +2 | findstr networkdiscoveryapi
@@ -28,5 +25,3 @@ else
 		findstr networkdiscoveryapi | \
 		awk '{system("docker service update --image " $5 " " $2)}'
 fi
-
-docker push eassbhhtgu/networkdiscoveryapi:latest

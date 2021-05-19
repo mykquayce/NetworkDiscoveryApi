@@ -15,7 +15,8 @@ namespace NetworkDiscoveryApi.WebApplication.Tests.Fixtures
 				.ConfigureAppConfiguration(config =>
 				{
 					config
-						.AddUserSecrets(this.GetType().Assembly);
+						.AddEnvironmentVariables()
+						.AddUserSecrets(this.GetType().Assembly, optional: true);
 				});
 
 			Server = new TestServer(builder);
