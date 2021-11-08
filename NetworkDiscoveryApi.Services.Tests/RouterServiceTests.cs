@@ -6,6 +6,7 @@ using Xunit;
 
 namespace NetworkDiscoveryApi.Services.Tests
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2252:This API requires opting into preview features", Justification = "<Pending>")]
 	public sealed class RouterServiceTests : IClassFixture<Fixtures.RouterServiceFixture>
 	{
 		private readonly IRouterService _sut;
@@ -41,7 +42,6 @@ namespace NetworkDiscoveryApi.Services.Tests
 			{
 				var stopwatch = Stopwatch.StartNew();
 				await _sut.GetDhcpLeasesAsync().ToListAsync();
-				stopwatch.Start();
 				times.Add(stopwatch.ElapsedTicks);
 			}
 

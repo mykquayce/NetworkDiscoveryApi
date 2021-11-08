@@ -7,11 +7,11 @@ using System.Net.NetworkInformation;
 
 namespace NetworkDiscoveryApi.Services.Tests.Fixtures
 {
-	public sealed class RouterServiceFixture : IDisposable
+	public class RouterServiceFixture
 	{
 		public RouterServiceFixture()
 		{
-			var sshServiceMock = new Mock<Helpers.SSH.Services.ISSHService>();
+			var sshServiceMock = new Mock<Helpers.SSH.IService>();
 
 			var entries = new Helpers.Networking.Models.DhcpLease[1]
 			{
@@ -28,9 +28,5 @@ namespace NetworkDiscoveryApi.Services.Tests.Fixtures
 		}
 
 		public IRouterService RouterService { get; }
-
-		#region dispose
-		public void Dispose() => RouterService.Dispose();
-		#endregion dispose
 	}
 }

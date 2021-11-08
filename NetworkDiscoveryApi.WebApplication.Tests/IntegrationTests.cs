@@ -4,6 +4,7 @@ using Xunit;
 
 namespace NetworkDiscoveryApi.WebApplication.Tests
 {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2252:This API requires opting into preview features", Justification = "<Pending>")]
 	public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>
 	{
 		private readonly HttpClient _httpClient;

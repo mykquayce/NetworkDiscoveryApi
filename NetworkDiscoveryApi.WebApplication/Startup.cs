@@ -21,11 +21,12 @@ namespace NetworkDiscoveryApi.WebApplication
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services
-				.Configure<Helpers.SSH.Services.Concrete.SSHService.Config>(Configuration.GetSection("Router"));
+				.Configure<Helpers.SSH.Config>(Configuration.GetSection("Router"));
 
 			services
 				.AddSingleton<Services.ICachingService<IList<Helpers.Networking.Models.DhcpLease>>, Services.Concrete.CachingService<IList<Helpers.Networking.Models.DhcpLease>>>()
-				.AddTransient<Helpers.SSH.Services.ISSHService, Helpers.SSH.Services.Concrete.SSHService>()
+				.AddTransient<Helpers.SSH.IClient, Helpers.SSH.Concrete.Client>()
+				.AddTransient<Helpers.SSH.IService, Helpers.SSH.Concrete.Service>()
 				.AddTransient<Services.IRouterService, Services.Concrete.RouterService>();
 
 			services.AddControllers();

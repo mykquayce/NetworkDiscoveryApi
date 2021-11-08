@@ -10,10 +10,7 @@ services:
     - 34785:80/tcp
     secrets:
     - source: id_rsa
-    - source: id_rsa.pub
 
 secrets:
   id_rsa:
     file: ${USERPROFILE}\.ssh\id_rsa
-  id_rsa.pub:
-    file: ${USERPROFILE}\.ssh\id_rsa.pub

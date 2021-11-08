@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace NetworkDiscoveryApi.Services
 {
-	public interface IRouterService : IDisposable
+	public interface IRouterService
 	{
 		IAsyncEnumerable<Helpers.Networking.Models.DhcpLease> GetDhcpLeasesAsync();
 	}

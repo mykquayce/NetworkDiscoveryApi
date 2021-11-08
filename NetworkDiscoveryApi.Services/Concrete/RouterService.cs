@@ -1,5 +1,5 @@
 ﻿using Dawn;
-using Helpers.SSH.Services;
+using Helpers.SSH;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,10 +7,10 @@ namespace NetworkDiscoveryApi.Services.Concrete
 {
 	public class RouterService : IRouterService
 	{
-		private readonly ISSHService _sshService;
+		private readonly IService _sshService;
 		private readonly ICachingService<IList<Helpers.Networking.Models.DhcpLease>> _cachingService;
 
-		public RouterService(ISSHService sshService, ICachingService<IList<Helpers.Networking.Models.DhcpLease>> cachingService)
+		public RouterService(IService sshService, ICachingService<IList<Helpers.Networking.Models.DhcpLease>> cachingService)
 		{
 			_sshService = Guard.Argument(() => sshService).NotNull().Value;
 			_cachingService = Guard.Argument(() => cachingService).NotNull().Value;
@@ -30,28 +30,5 @@ namespace NetworkDiscoveryApi.Services.Concrete
 				yield return entry;
 			}
 		}
-
-		#region Dispose
-		private bool _disposed;
-
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					_sshService.Dispose();
-				}
-
-				_disposed = true;
-			}
-		}
-
-		public void Dispose()
-		{
-			Dispose(disposing: true);
-			System.GC.SuppressFinalize(this);
-		}
-		#endregion Dispose
 	}
 }
