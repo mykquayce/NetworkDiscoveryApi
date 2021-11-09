@@ -1,37 +1,34 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Net.Http;
 
-namespace NetworkDiscoveryApi.WebApplication.Tests.Fixtures
+namespace NetworkDiscoveryApi.WebApplication.Tests.Fixtures;
+
+public sealed class WebHostFixture : IDisposable
 {
-	public sealed class WebHostFixture : IDisposable
+	public WebHostFixture()
 	{
-		public WebHostFixture()
-		{
-			var builder = new WebHostBuilder()
-				.UseStartup<Startup>()
-				.ConfigureAppConfiguration(config =>
-				{
-					config
-						.AddEnvironmentVariables()
-						.AddUserSecrets(this.GetType().Assembly, optional: true);
-				});
+		var builder = new WebHostBuilder()
+			.UseStartup<Startup>()
+			.ConfigureAppConfiguration(config =>
+			{
+				config
+					.AddEnvironmentVariables()
+					.AddUserSecrets(this.GetType().Assembly, optional: true);
+			});
 
-			Server = new TestServer(builder);
-			HttpClient = Server.CreateClient();
-		}
-
-		public TestServer Server { get; }
-		public HttpClient HttpClient { get; }
-
-		#region dispose
-		public void Dispose()
-		{
-			HttpClient.Dispose();
-			Server.Dispose();
-		}
-		#endregion dispose
+		Server = new TestServer(builder);
+		HttpClient = Server.CreateClient();
 	}
+
+	public TestServer Server { get; }
+	public HttpClient HttpClient { get; }
+
+	#region dispose
+	public void Dispose()
+	{
+		HttpClient.Dispose();
+		Server.Dispose();
+	}
+	#endregion dispose
 }

@@ -1,27 +1,23 @@
-using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace NetworkDiscoveryApi.WebApplication.Tests
+namespace NetworkDiscoveryApi.WebApplication.Tests;
+
+public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2252:This API requires opting into preview features", Justification = "<Pending>")]
-	public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>
+	private readonly HttpClient _httpClient;
+
+	public IntegrationTests(Fixtures.WebHostFixture fixture)
 	{
-		private readonly HttpClient _httpClient;
+		_httpClient = fixture.HttpClient;
+	}
 
-		public IntegrationTests(Fixtures.WebHostFixture fixture)
-		{
-			_httpClient = fixture.HttpClient;
-		}
+	[Fact]
+	public async Task GetDhcpLicenses()
+	{
+		var response = await _httpClient.GetStringAsync("/api/router");
 
-		[Fact]
-		public async Task GetDhcpLicenses()
-		{
-			var response = await _httpClient.GetStringAsync("/api/router");
-
-			Assert.NotNull(response);
-			Assert.NotEmpty(response);
-			Assert.Equal('[', response[0]);
-		}
+		Assert.NotNull(response);
+		Assert.NotEmpty(response);
+		Assert.Equal('[', response[0]);
 	}
 }

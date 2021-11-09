@@ -1,36 +1,32 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 
-namespace NetworkDiscoveryApi.Services.Tests
+namespace NetworkDiscoveryApi.Services.Tests;
+
+public class CachingServiceTests : IClassFixture<Fixtures.RouterServiceFixture>
 {
-	public class CachingServiceTests : IClassFixture<Fixtures.RouterServiceFixture>
+	private readonly IRouterService _routerService;
+
+	public CachingServiceTests(Fixtures.RouterServiceFixture fixture)
 	{
-		private readonly IRouterService _routerService;
+		_routerService = fixture.RouterService;
+	}
 
-		public CachingServiceTests(Fixtures.RouterServiceFixture fixture)
-		{
-			_routerService = fixture.RouterService;
-		}
+	[Fact]
+	public async Task Cache()
+	{
+		IList<Helpers.Networking.Models.DhcpLease> before = await _routerService.GetDhcpLeasesAsync().ToListAsync();
 
-		[Fact]
-		public async Task Cache()
-		{
-			IList<Helpers.Networking.Models.DhcpLease> before = await _routerService.GetDhcpLeasesAsync().ToListAsync();
+		using var cache = new Services.Concrete.CachingService<IList<Helpers.Networking.Models.DhcpLease>>();
 
-			using var cache = new Services.Concrete.CachingService<IList<Helpers.Networking.Models.DhcpLease>>();
+		Assert.NotNull(before);
+		Assert.NotEmpty(before);
 
-			Assert.NotNull(before);
-			Assert.NotEmpty(before);
+		cache.Set(before);
 
-			cache.Set(before);
+		var ok = cache.TryGet(out var after);
 
-			var ok = cache.TryGet(out var after);
-
-			Assert.True(ok);
-			Assert.NotNull(after);
-			Assert.Same(before, after);
-		}
+		Assert.True(ok);
+		Assert.NotNull(after);
+		Assert.Same(before, after);
 	}
 }
