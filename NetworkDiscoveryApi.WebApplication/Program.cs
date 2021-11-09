@@ -1,32 +1,26 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using System.Threading.Tasks;
+namespace NetworkDiscoveryApi.WebApplication;
 
-namespace NetworkDiscoveryApi.WebApplication
+public static class Program
 {
-	public static class Program
+	public static Task Main(string[] args) => CreateHostBuilder(args).RunConsoleAsync();
+
+	public static IHostBuilder CreateHostBuilder(string[] args)
 	{
-		public static Task Main(string[] args) => CreateHostBuilder(args).RunConsoleAsync();
+		var hostBuilder = Host.CreateDefaultBuilder(args);
 
-		public static IHostBuilder CreateHostBuilder(string[] args)
-		{
-			var hostBuilder = Host.CreateDefaultBuilder(args);
+		hostBuilder
+			.ConfigureAppConfiguration((context, configBuilder) =>
+			{
+				configBuilder
+					.AddUserSecrets(typeof(Program).Assembly, optional: true, reloadOnChange: true);
+			});
 
-			hostBuilder
-				.ConfigureAppConfiguration((context, configBuilder) =>
-				{
-					configBuilder
-						.AddUserSecrets(typeof(Program).Assembly, optional: true, reloadOnChange: true);
-				});
+		hostBuilder
+			.ConfigureWebHostDefaults(webBuilder =>
+			{
+				webBuilder.UseStartup<Startup>();
+			});
 
-			hostBuilder
-				.ConfigureWebHostDefaults(webBuilder =>
-				{
-					webBuilder.UseStartup<Startup>();
-				});
-
-			return hostBuilder;
-		}
+		return hostBuilder;
 	}
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace NetworkDiscoveryApi.Services;
 
-namespace NetworkDiscoveryApi.Services
+public interface IRouterService
 {
-	public interface IRouterService
-	{
-		IAsyncEnumerable<Helpers.Networking.Models.DhcpLease> GetDhcpLeasesAsync();
-	}
+	IAsyncEnumerable<Helpers.Networking.Models.DhcpLease> GetDhcpLeasesAsync();
 }

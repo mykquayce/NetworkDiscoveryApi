@@ -1,53 +1,48 @@
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace NetworkDiscoveryApi.Services.Tests
+namespace NetworkDiscoveryApi.Services.Tests;
+
+public sealed class RouterServiceTests : IClassFixture<Fixtures.RouterServiceFixture>
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2252:This API requires opting into preview features", Justification = "<Pending>")]
-	public sealed class RouterServiceTests : IClassFixture<Fixtures.RouterServiceFixture>
+	private readonly IRouterService _sut;
+
+	public RouterServiceTests(Fixtures.RouterServiceFixture fixture)
 	{
-		private readonly IRouterService _sut;
+		_sut = fixture.RouterService;
+	}
 
-		public RouterServiceTests(Fixtures.RouterServiceFixture fixture)
+	[Fact]
+	public async Task GetDhcpLeases()
+	{
+		var entries = await _sut.GetDhcpLeasesAsync().ToListAsync();
+
+		Assert.NotNull(entries);
+		Assert.NotEmpty(entries);
+
+		foreach (var entry in entries)
 		{
-			_sut = fixture.RouterService;
+			Assert.NotNull(entry);
+			Assert.NotNull(entry.PhysicalAddress);
+			Assert.NotNull(entry.IPAddress);
+		}
+	}
+
+	[Theory]
+	[InlineData(10)]
+	public async Task CacheTests(int count)
+	{
+		var times = new List<long>(capacity: count);
+
+		while (count-- > 0)
+		{
+			var stopwatch = Stopwatch.StartNew();
+			await _sut.GetDhcpLeasesAsync().ToListAsync();
+			times.Add(stopwatch.ElapsedTicks);
 		}
 
-		[Fact]
-		public async Task GetDhcpLeases()
-		{
-			var entries = await _sut.GetDhcpLeasesAsync().ToListAsync();
-
-			Assert.NotNull(entries);
-			Assert.NotEmpty(entries);
-
-			foreach (var entry in entries)
-			{
-				Assert.NotNull(entry);
-				Assert.NotNull(entry.PhysicalAddress);
-				Assert.NotNull(entry.IPAddress);
-			}
-		}
-
-		[Theory]
-		[InlineData(10)]
-		public async Task CacheTests(int count)
-		{
-			var times = new List<long>(capacity: count);
-
-			while (count-- > 0)
-			{
-				var stopwatch = Stopwatch.StartNew();
-				await _sut.GetDhcpLeasesAsync().ToListAsync();
-				times.Add(stopwatch.ElapsedTicks);
-			}
-
-			// Assert, first is much slower than any of the rest
-			Assert.NotEmpty(times);
-			Assert.True((times[0] / 2d) > times.Skip(1).Max());
-		}
+		// Assert, first is much slower than any of the rest
+		Assert.NotEmpty(times);
+		Assert.True((times[0] / 2d) > times.Skip(1).Max());
 	}
 }

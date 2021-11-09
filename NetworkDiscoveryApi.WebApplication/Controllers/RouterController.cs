@@ -1,33 +1,30 @@
 ﻿using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using NetworkDiscoveryApi.Services;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace NetworkDiscoveryApi.WebApplication.Controllers
+namespace NetworkDiscoveryApi.WebApplication.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class RouterController : ControllerBase
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class RouterController : ControllerBase
+	private readonly IRouterService _routerService;
+
+	public RouterController(IRouterService routerService)
 	{
-		private readonly IRouterService _routerService;
+		_routerService = Guard.Argument(() => routerService).NotNull().Value;
+	}
 
-		public RouterController(IRouterService routerService)
+	[HttpGet]
+	public async Task<IActionResult> Get()
+	{
+		var entries = await _routerService.GetDhcpLeasesAsync().ToListAsync();
+
+		if (entries.Any())
 		{
-			_routerService = Guard.Argument(() => routerService).NotNull().Value;
+			return Ok(entries);
 		}
 
-		[HttpGet]
-		public async Task<IActionResult> Get()
-		{
-			var entries = await _routerService.GetDhcpLeasesAsync().ToListAsync();
-
-			if (entries.Any())
-			{
-				return Ok(entries);
-			}
-
-			return NotFound();
-		}
+		return NotFound();
 	}
 }
