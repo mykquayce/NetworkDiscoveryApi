@@ -6,6 +6,10 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+
+      Router:Host: 192.168.1.10
+      Router:PathToPrivateKey: /run/secrets/id_rsa
+      Router:Port: 22
+      Router:Username: root
     ports:
     - 34785:80/tcp
     secrets:
