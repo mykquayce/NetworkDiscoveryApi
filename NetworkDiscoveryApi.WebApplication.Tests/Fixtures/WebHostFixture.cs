@@ -1,34 +1,24 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace NetworkDiscoveryApi.WebApplication.Tests.Fixtures;
 
 public sealed class WebHostFixture : IDisposable
 {
+	private readonly WebApplicationFactory<Program> _factory;
+
 	public WebHostFixture()
 	{
-		var builder = new WebHostBuilder()
-			.UseStartup<Startup>()
-			.ConfigureAppConfiguration(config =>
-			{
-				config
-					.AddEnvironmentVariables()
-					.AddUserSecrets(this.GetType().Assembly, optional: true);
-			});
-
-		Server = new TestServer(builder);
-		HttpClient = Server.CreateClient();
+		_factory = new();
+		HttpClient = _factory.CreateClient();
 	}
 
-	public TestServer Server { get; }
 	public HttpClient HttpClient { get; }
 
 	#region dispose
 	public void Dispose()
 	{
 		HttpClient.Dispose();
-		Server.Dispose();
+		_factory.Dispose();
 	}
 	#endregion dispose
 }

@@ -1,26 +1,37 @@
-namespace NetworkDiscoveryApi.WebApplication;
+var builder = WebApplication.CreateBuilder(args);
 
-public static class Program
+// Add services to the container.
+
+builder.Services
+	.Configure<Helpers.SSH.Config>(builder.Configuration.GetSection("Router"));
+
+builder.Services
+	.AddSingleton<NetworkDiscoveryApi.Services.ICachingService<IList<Helpers.Networking.Models.DhcpLease>>, NetworkDiscoveryApi.Services.Concrete.CachingService<IList<Helpers.Networking.Models.DhcpLease>>>()
+	.AddTransient<Helpers.SSH.IClient, Helpers.SSH.Concrete.Client>()
+	.AddTransient<Helpers.SSH.IService, Helpers.SSH.Concrete.Service>()
+	.AddTransient<NetworkDiscoveryApi.Services.IRouterService, NetworkDiscoveryApi.Services.Concrete.RouterService>();
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-	public static Task Main(string[] args) => CreateHostBuilder(args).RunConsoleAsync();
-
-	public static IHostBuilder CreateHostBuilder(string[] args)
-	{
-		var hostBuilder = Host.CreateDefaultBuilder(args);
-
-		hostBuilder
-			.ConfigureAppConfiguration((context, configBuilder) =>
-			{
-				configBuilder
-					.AddUserSecrets(typeof(Program).Assembly, optional: true, reloadOnChange: true);
-			});
-
-		hostBuilder
-			.ConfigureWebHostDefaults(webBuilder =>
-			{
-				webBuilder.UseStartup<Startup>();
-			});
-
-		return hostBuilder;
-	}
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1050:Declare types in namespaces", Justification = "needed by integration tests")]
+public partial class Program { }
