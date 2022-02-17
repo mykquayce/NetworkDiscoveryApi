@@ -24,8 +24,6 @@ secrets:
   id_rsa:
     file: ${USERPROFILE}\.ssh\id_rsa
   localhost.crt:
-    external: true
-    name: localhost.crt
+    file: ${USERPROFILE}\.aspnet\https\localhost.crt
   localhost.key:
-    external: true
-    name: localhost.key
+    file: ${USERPROFILE}\.aspnet\https\localhost.key
