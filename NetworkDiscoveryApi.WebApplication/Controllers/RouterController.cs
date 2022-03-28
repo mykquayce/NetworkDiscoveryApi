@@ -1,4 +1,5 @@
 ﻿using Dawn;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetworkDiscoveryApi.Services;
 
@@ -6,6 +7,7 @@ namespace NetworkDiscoveryApi.WebApplication.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class RouterController : ControllerBase
 {
 	private readonly IRouterService _routerService;

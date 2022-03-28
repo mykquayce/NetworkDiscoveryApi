@@ -5,10 +5,12 @@ services:
     image: eassbhhtgu/networkdiscoveryapi:latest
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_Kestrel__Certificates__Default__KeyPath: /run/secrets/localhost.key
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /run/secrets/localhost.crt
       ASPNETCORE_HTTPS_PORT: '443'
       ASPNETCORE_URLS: https://+
-      Kestrel:Certificates:Default:KeyPath: /run/secrets/localhost.key
-      Kestrel:Certificates:Default:Path: /run/secrets/localhost.crt
+      Identity:Authority: https://identityserver
+      Identity:Scope: networkdiscovery
       Router:Host: 192.168.1.10
       Router:PathToPrivateKey: /run/secrets/id_rsa
       Router:Port: 22

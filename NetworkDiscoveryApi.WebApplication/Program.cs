@@ -3,6 +3,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services
+	.AddAuthenticationAuthorization(builder.Configuration.GetSection("Identity"));
+
+builder.Services
 	.Configure<Helpers.SSH.Config>(builder.Configuration.GetSection("Router"));
 
 builder.Services
@@ -27,9 +30,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers()
+	.RequireAuthorization("ApiScope");
 
 app.Run();
 
