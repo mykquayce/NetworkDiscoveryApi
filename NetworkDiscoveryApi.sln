@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{16F2CC48-E8EE-482D-BB9F-11E91F35DAFE}"
 	ProjectSection(SolutionItems) = preProject
 		build.ps1 = build.ps1
+		certs-dockerfile = certs-dockerfile
 		deploy.ps1 = deploy.ps1
 		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
