@@ -6,11 +6,11 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://discovery",
+      "applicationUrl": "https://networkdiscovery",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_Kestrel__Certificates__Default__KeyPath": "%userprofile%\\.aspnet\\https\\discovery.key",
-        "ASPNETCORE_Kestrel__Certificates__Default__Path": "%userprofile%\\.aspnet\\https\\discovery.crt"
+        "ASPNETCORE_Kestrel__Certificates__Default__KeyPath": "%userprofile%\\.aspnet\\https\\networkdiscovery.key",
+        "ASPNETCORE_Kestrel__Certificates__Default__Path": "%userprofile%\\.aspnet\\https\\networkdiscovery.crt"
       }
     }
   }
