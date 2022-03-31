@@ -14,17 +14,36 @@ public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>, IClassFi
 		_identityClient = identityClientFixture.IdentityClient;
 	}
 
+	public string? _accessToken;
+	public string AccessToken => _accessToken ??= _identityClient.GetAccessTokenAsync().GetAwaiter().GetResult();
+
 	[Fact]
 	public async Task GetDhcpLicenses()
 	{
-		var accessToken = await _identityClient.GetAccessTokenAsync();
-
-		_httpClient.SetBearerToken(accessToken);
+		_httpClient.SetBearerToken(AccessToken);
 
 		var response = await _httpClient.GetStringAsync("/api/router");
 
 		Assert.NotNull(response);
 		Assert.NotEmpty(response);
 		Assert.StartsWith("[", response);
+	}
+
+	[Theory]
+	[InlineData("3c:6a:9d:14:d7:65")]
+	[InlineData("3C:6A:9D:14:D7:65")]
+	[InlineData("3c6a9d14d765")]
+	[InlineData("3c-6a-9d-14-d7-65")]
+	[InlineData("3C6A9D14D765")]
+	[InlineData("3C-6A-9D-14-D7-65")]
+	public async Task GetDhcpLicenseForMac(string physicalAddressString)
+	{
+		_httpClient.SetBearerToken(AccessToken);
+
+		var response = await _httpClient.GetStringAsync("/api/router/" + physicalAddressString);
+
+		Assert.NotNull(response);
+		Assert.NotEmpty(response);
+		Assert.StartsWith("{", response);
 	}
 }
