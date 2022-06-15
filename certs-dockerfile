@@ -1,3 +1,0 @@
-FROM alpine:latest
-WORKDIR /usr/local/share/ca-certificates
-COPY ./*.crt .

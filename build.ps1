@@ -1,11 +1,7 @@
-# build a certs image
-docker build --file .\certs-dockerfile --tag eassbhhtgu/certs:latest ${env:USERPROFILE}\.aspnet\https
-if (!$?) { return; }
-
 # pull images
 $images = @(
-	"mcr.microsoft.com/dotnet/aspnet:latest",
-	"mcr.microsoft.com/dotnet/sdk:latest")
+	"mcr.microsoft.com/dotnet/aspnet:6.0",
+	"mcr.microsoft.com/dotnet/sdk:6.0")
 
 foreach ($image in $images) {
 	docker pull $image
@@ -13,12 +9,12 @@ foreach ($image in $images) {
 }
 
 # build
-docker build --tag eassbhhtgu/networkdiscoveryapi:latest .
+docker build `
+	--secret id=ca_crt,src=${env:userprofile}\.aspnet\https\ca.crt `
+	--tag eassbhhtgu/networkdiscoveryapi:latest `
+	.
 if (!$?) { return; }
 
 # push
 docker push eassbhhtgu/networkdiscoveryapi:latest
 if (!$?) { return; }
-
-# drop the certs image
-docker rmi eassbhhtgu/certs:latest
