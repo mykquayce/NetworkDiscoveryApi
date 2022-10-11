@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetworkDiscoveryApi.Services;
+using System.Net;
 using System.Net.NetworkInformation;
 
 namespace NetworkDiscoveryApi.WebApplication.Controllers;
@@ -19,37 +20,26 @@ public class RouterController : ControllerBase
 	}
 
 	[HttpGet]
-	public async Task<IActionResult> Get()
-	{
-		var entries = await _routerService.GetDhcpLeasesAsync().ToListAsync();
-
-		if (entries.Any())
-		{
-			return Ok(entries);
-		}
-
-		return NotFound();
-	}
-
-	[HttpGet]
 	[Route("{mac:length(12,17)}")]
-	public async Task<IActionResult> Get(string mac)
+	public IActionResult Get(string mac)
 	{
 		if (!PhysicalAddress.TryParse(mac, out var physicalAddress))
 		{
 			return BadRequest(new { message = "unable to parse mac", mac, });
 		}
 
-		var entries = _routerService.GetDhcpLeasesAsync();
-
-		await foreach (var entry in entries)
+		try
 		{
-			if (entry.PhysicalAddress.Equals(physicalAddress))
-			{
-				return Ok(entry);
-			}
+			var entry = _routerService.GetLeaseByPhysicalAddress(physicalAddress);
+			return Ok(entry);
 		}
-
-		return NotFound();
+		catch (ArgumentOutOfRangeException)
+		{
+			return NotFound(new { MAC = physicalAddress.ToString().ToLowerInvariant(), });
+		}
+		catch (Exception ex)
+		{
+			return StatusCode((int)HttpStatusCode.InternalServerError, new { MAC = physicalAddress.ToString().ToLowerInvariant(), ex.Message, });
+		}
 	}
 }

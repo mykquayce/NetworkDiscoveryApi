@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using System.Net.NetworkInformation;
 using Xunit;
 
 namespace NetworkDiscoveryApi.Services.Tests;
@@ -12,37 +12,13 @@ public sealed class RouterServiceTests : IClassFixture<Fixtures.RouterServiceFix
 		_sut = fixture.RouterService;
 	}
 
-	[Fact]
-	public async Task GetDhcpLeases()
-	{
-		var entries = await _sut.GetDhcpLeasesAsync().ToListAsync();
-
-		Assert.NotNull(entries);
-		Assert.NotEmpty(entries);
-
-		foreach (var entry in entries)
-		{
-			Assert.NotNull(entry);
-			Assert.NotNull(entry.PhysicalAddress);
-			Assert.NotNull(entry.IPAddress);
-		}
-	}
-
 	[Theory]
-	[InlineData(10)]
-	public async Task CacheTests(int count)
+	[InlineData("f02f74d209a5")]
+	public void GetDhcpLeases(string macString)
 	{
-		var times = new List<long>(capacity: count);
+		var mac = PhysicalAddress.Parse(macString);
+		var entry = _sut.GetLeaseByPhysicalAddress(mac);
 
-		while (count-- > 0)
-		{
-			var stopwatch = Stopwatch.StartNew();
-			await _sut.GetDhcpLeasesAsync().ToListAsync();
-			times.Add(stopwatch.ElapsedTicks);
-		}
-
-		// Assert, first is much slower than any of the rest
-		Assert.NotEmpty(times);
-		Assert.True((times[0] / 2d) > times.Skip(1).Max());
+		Assert.NotNull(entry);
 	}
 }

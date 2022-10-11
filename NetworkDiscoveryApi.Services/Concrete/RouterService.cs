@@ -1,31 +1,24 @@
 ﻿using Dawn;
-using Helpers.SSH;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace NetworkDiscoveryApi.Services.Concrete;
 
 public class RouterService : IRouterService
 {
-	private readonly IService _sshService;
-	private readonly ICachingService<IList<Helpers.Networking.Models.DhcpLease>> _cachingService;
+	private readonly IMemoryCache _memoryCache;
 
-	public RouterService(IService sshService, ICachingService<IList<Helpers.Networking.Models.DhcpLease>> cachingService)
+	public RouterService(IMemoryCache memoryCache)
 	{
-		_sshService = Guard.Argument(() => sshService).NotNull().Value;
-		_cachingService = Guard.Argument(() => cachingService).NotNull().Value;
+		_memoryCache = Guard.Argument(() => memoryCache).NotNull().Value;
 	}
 
-	public async IAsyncEnumerable<Helpers.Networking.Models.DhcpLease> GetDhcpLeasesAsync()
+	public Helpers.Networking.Models.DhcpLease GetLease(object key)
 	{
-		if (!_cachingService.TryGet(out var entries))
+		if (_memoryCache.TryGetValue<Helpers.Networking.Models.DhcpLease>(key, out var lease))
 		{
-			entries = await _sshService.GetDhcpLeasesAsync().ToListAsync();
-
-			_cachingService.Set(entries);
+			return lease!;
 		}
 
-		foreach (var entry in entries!)
-		{
-			yield return entry;
-		}
+		throw new ArgumentOutOfRangeException(nameof(key), key, $"{nameof(key)} {key} not found");
 	}
 }

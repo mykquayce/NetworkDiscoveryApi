@@ -1,28 +1,15 @@
-﻿using Moq;
-using System.Net;
-using System.Net.NetworkInformation;
+﻿namespace NetworkDiscoveryApi.Services.Tests.Fixtures;
 
-namespace NetworkDiscoveryApi.Services.Tests.Fixtures;
-
-public class RouterServiceFixture
+public sealed class RouterServiceFixture : IDisposable
 {
+	private readonly MemoryCacheFixture _memoryCacheFixture = new();
+
 	public RouterServiceFixture()
 	{
-		var sshServiceMock = new Mock<Helpers.SSH.IService>();
-
-		var entries = new Helpers.Networking.Models.DhcpLease[1]
-		{
-				new(DateTime.MaxValue, PhysicalAddress.None, IPAddress.None, "localhost", "home"),
-		};
-
-		sshServiceMock
-			.Setup(s => s.GetDhcpLeasesAsync())
-			.Returns(entries.ToAsyncEnumerable());
-
-		var cachingService = new Services.Concrete.CachingService<IList<Helpers.Networking.Models.DhcpLease>>();
-
-		RouterService = new Concrete.RouterService(sshServiceMock.Object, cachingService);
+		RouterService = new Concrete.RouterService(_memoryCacheFixture.MemoryCache);
 	}
 
 	public IRouterService RouterService { get; }
+
+	public void Dispose() => _memoryCacheFixture.Dispose();
 }

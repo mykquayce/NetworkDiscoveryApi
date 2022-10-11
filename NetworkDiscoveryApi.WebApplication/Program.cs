@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Caching.Memory;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,12 +8,7 @@ builder.Services
 	.AddAuthenticationAuthorization(builder.Configuration.GetSection("Identity"));
 
 builder.Services
-	.Configure<Helpers.SSH.Config>(builder.Configuration.GetSection("Router"));
-
-builder.Services
-	.AddSingleton<NetworkDiscoveryApi.Services.ICachingService<IList<Helpers.Networking.Models.DhcpLease>>, NetworkDiscoveryApi.Services.Concrete.CachingService<IList<Helpers.Networking.Models.DhcpLease>>>()
-	.AddTransient<Helpers.SSH.IClient, Helpers.SSH.Concrete.Client>()
-	.AddTransient<Helpers.SSH.IService, Helpers.SSH.Concrete.Service>()
+	.AddSingleton<IMemoryCache>(new MemoryCache(new MemoryCacheOptions()))
 	.AddTransient<NetworkDiscoveryApi.Services.IRouterService, NetworkDiscoveryApi.Services.Concrete.RouterService>();
 
 builder.Services.AddControllers();
