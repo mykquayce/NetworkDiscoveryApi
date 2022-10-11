@@ -4,11 +4,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddHostedService<NetworkDiscoveryApi.WebApplication.Worker>();
+
 builder.Services
 	.AddAuthenticationAuthorization(builder.Configuration.GetSection("Identity"));
 
 builder.Services
+	.Configure<Helpers.SSH.Config>(builder.Configuration.GetSection("Router"));
+
+builder.Services
 	.AddSingleton<IMemoryCache>(new MemoryCache(new MemoryCacheOptions()))
+	.AddTransient<Helpers.SSH.IClient, Helpers.SSH.Concrete.Client>()
+	.AddTransient<Helpers.SSH.IService, Helpers.SSH.Concrete.Service>()
 	.AddTransient<NetworkDiscoveryApi.Services.IRouterService, NetworkDiscoveryApi.Services.Concrete.RouterService>();
 
 builder.Services.AddControllers();
