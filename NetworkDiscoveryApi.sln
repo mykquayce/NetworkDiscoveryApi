@@ -12,11 +12,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{16F2CC48-E8EE-482D-BB9F-11E91F35DAFE}"
 	ProjectSection(SolutionItems) = preProject
 		build.ps1 = build.ps1
-		certs-dockerfile = certs-dockerfile
 		deploy.ps1 = deploy.ps1
 		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
 		README.md = README.md
+		refresh.ps1 = refresh.ps1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkDiscoveryApi.WebApplication.Tests", "NetworkDiscoveryApi.WebApplication.Tests\NetworkDiscoveryApi.WebApplication.Tests.csproj", "{E07AB861-FFD4-4CE2-A0DD-241F1CDE8B50}"

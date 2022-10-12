@@ -1,31 +1,47 @@
 ﻿using Dawn;
-using Helpers.SSH;
+using Microsoft.Extensions.Options;
+using NetworkDiscoveryApi.Services.Models;
+using System.Net.NetworkInformation;
 
 namespace NetworkDiscoveryApi.Services.Concrete;
 
 public class RouterService : IRouterService
 {
-	private readonly IService _sshService;
-	private readonly ICachingService<IList<Helpers.Networking.Models.DhcpLease>> _cachingService;
+	private readonly Helpers.SSH.IService _sshService;
+	private readonly IReadOnlyDictionary<string, PhysicalAddress> _aliasesLookup;
 
-	public RouterService(IService sshService, ICachingService<IList<Helpers.Networking.Models.DhcpLease>> cachingService)
+	public RouterService(
+		Helpers.SSH.IService sshService,
+		IOptions<IReadOnlyDictionary<string, PhysicalAddress>> aliasesOptions)
 	{
-		_sshService = Guard.Argument(() => sshService).NotNull().Value;
-		_cachingService = Guard.Argument(() => cachingService).NotNull().Value;
+		_sshService = Guard.Argument(sshService).NotNull().Value;
+		_aliasesLookup = Guard.Argument(aliasesOptions).NotNull().Wrap(o => o.Value)
+			.NotNull().NotEmpty().Value;
 	}
 
-	public async IAsyncEnumerable<Helpers.Networking.Models.DhcpLease> GetDhcpLeasesAsync()
+	public async IAsyncEnumerable<DhcpLease> GetLeasesAsync()
 	{
-		if (!_cachingService.TryGet(out var entries))
-		{
-			entries = await _sshService.GetDhcpLeasesAsync().ToListAsync();
+		var leases = _sshService.GetDhcpLeasesAsync();
 
-			_cachingService.Set(entries);
-		}
+		var aliasesLookup = _aliasesLookup.Invert();
 
-		foreach (var entry in entries!)
+		await foreach (var lease in leases)
 		{
-			yield return entry;
+			var (expiry, mac, ip, hostname, _) = lease;
+
+			var ok = aliasesLookup.TryGetValue(mac, out var aliases);
+
+			if (ok)
+			{
+				foreach (var alias in aliases!)
+				{
+					yield return new(expiry, mac, ip, hostname?.ToLowerInvariant(), alias.ToLowerInvariant());
+				}
+			}
+			else
+			{
+				yield return new(expiry, mac, ip, hostname?.ToLowerInvariant(), Alias: null);
+			}
 		}
 	}
 }

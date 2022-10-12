@@ -23,5 +23,18 @@ public class SerializationTests
 		Assert.NotNull(json);
 		Assert.NotEmpty(json);
 		Assert.NotEqual("{}", json);
+
+		var actual = JsonSerializer.Deserialize<Dictionary<string, string?>>(json)!
+			.ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase)
+			.AsReadOnly();
+
+		Assert.NotNull(actual);
+		foreach (var key in new[] { "expiration", "physicaladdress", "ipaddress", "hostname", "identifier", })
+		{
+			Assert.Contains(key, actual.Keys, StringComparer.OrdinalIgnoreCase);
+			var value = actual[key];
+			Assert.NotNull(value);
+			Assert.NotEmpty(value);
+		}
 	}
 }

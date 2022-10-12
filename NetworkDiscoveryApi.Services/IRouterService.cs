@@ -2,5 +2,5 @@
 
 public interface IRouterService
 {
-	IAsyncEnumerable<Helpers.Networking.Models.DhcpLease> GetDhcpLeasesAsync();
+	IAsyncEnumerable<Models.DhcpLease> GetLeasesAsync();
 }
