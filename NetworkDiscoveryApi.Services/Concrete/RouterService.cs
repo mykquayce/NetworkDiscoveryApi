@@ -1,24 +1,47 @@
 ﻿using Dawn;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using NetworkDiscoveryApi.Services.Models;
+using System.Net.NetworkInformation;
 
 namespace NetworkDiscoveryApi.Services.Concrete;
 
 public class RouterService : IRouterService
 {
-	private readonly IMemoryCache _memoryCache;
+	private readonly Helpers.SSH.IService _sshService;
+	private readonly IReadOnlyDictionary<string, PhysicalAddress> _aliasesLookup;
 
-	public RouterService(IMemoryCache memoryCache)
+	public RouterService(
+		Helpers.SSH.IService sshService,
+		IOptions<IReadOnlyDictionary<string, PhysicalAddress>> aliasesOptions)
 	{
-		_memoryCache = Guard.Argument(() => memoryCache).NotNull().Value;
+		_sshService = Guard.Argument(sshService).NotNull().Value;
+		_aliasesLookup = Guard.Argument(aliasesOptions).NotNull().Wrap(o => o.Value)
+			.NotNull().NotEmpty().Value;
 	}
 
-	public Helpers.Networking.Models.DhcpLease GetLease(object key)
+	public async IAsyncEnumerable<DhcpLease> GetLeasesAsync()
 	{
-		if (_memoryCache.TryGetValue<Helpers.Networking.Models.DhcpLease>(key, out var lease))
-		{
-			return lease!;
-		}
+		var leases = _sshService.GetDhcpLeasesAsync();
 
-		throw new ArgumentOutOfRangeException(nameof(key), key, $"{nameof(key)} {key} not found");
+		var aliasesLookup = _aliasesLookup.Invert();
+
+		await foreach (var lease in leases)
+		{
+			var (expiry, mac, ip, hostname, _) = lease;
+
+			var ok = aliasesLookup.TryGetValue(mac, out var aliases);
+
+			if (ok)
+			{
+				foreach (var alias in aliases!)
+				{
+					yield return new(expiry, mac, ip, hostname?.ToLowerInvariant(), alias.ToLowerInvariant());
+				}
+			}
+			else
+			{
+				yield return new(expiry, mac, ip, hostname?.ToLowerInvariant(), Alias: null);
+			}
+		}
 	}
 }

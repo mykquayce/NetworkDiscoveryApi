@@ -1,4 +1,8 @@
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using NetworkDiscoveryApi.Services;
+using NetworkDiscoveryApi.Services.Concrete;
+using System.Net.NetworkInformation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,13 +14,25 @@ builder.Services
 	.AddAuthenticationAuthorization(builder.Configuration.GetSection("Identity"));
 
 builder.Services
-	.Configure<Helpers.SSH.Config>(builder.Configuration.GetSection("Router"));
+	.AddSingleton<IOptions<IReadOnlyDictionary<string, PhysicalAddress>>>(provider =>
+	{
+		var dictionary = new Dictionary<string, string>();
+		builder.Configuration.GetSection("Aliases").Bind(dictionary);
+		var aliases = dictionary.ToDictionary(
+				kvp => kvp.Key,
+				kvp => PhysicalAddress.Parse(kvp.Value),
+				StringComparer.OrdinalIgnoreCase)
+			.AsReadOnly();
+		return Options.Create(aliases);
+	});
+
+builder.Services
+	.AddSSH(builder.Configuration.GetSection("Router"));
 
 builder.Services
 	.AddSingleton<IMemoryCache>(new MemoryCache(new MemoryCacheOptions()))
-	.AddTransient<Helpers.SSH.IClient, Helpers.SSH.Concrete.Client>()
-	.AddTransient<Helpers.SSH.IService, Helpers.SSH.Concrete.Service>()
-	.AddTransient<NetworkDiscoveryApi.Services.IRouterService, NetworkDiscoveryApi.Services.Concrete.RouterService>();
+	.AddTransient<IMemoryCacheService<NetworkDiscoveryApi.Services.Models.DhcpLease>, MemoryCacheService<NetworkDiscoveryApi.Services.Models.DhcpLease>>()
+	.AddTransient<IRouterService, RouterService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

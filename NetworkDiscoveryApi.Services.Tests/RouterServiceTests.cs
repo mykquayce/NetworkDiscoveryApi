@@ -1,4 +1,3 @@
-using System.Net.NetworkInformation;
 using Xunit;
 
 namespace NetworkDiscoveryApi.Services.Tests;
@@ -12,13 +11,13 @@ public sealed class RouterServiceTests : IClassFixture<Fixtures.RouterServiceFix
 		_sut = fixture.RouterService;
 	}
 
-	[Theory]
-	[InlineData("f02f74d209a5")]
-	public void GetDhcpLeases(string macString)
+	[Fact]
+	public async Task GetDhcpLeases()
 	{
-		var mac = PhysicalAddress.Parse(macString);
-		var entry = _sut.GetLeaseByPhysicalAddress(mac);
+		var entries = await _sut.GetLeasesAsync().ToListAsync();
 
-		Assert.NotNull(entry);
+		Assert.NotNull(entries);
+		Assert.NotEmpty(entries);
+		Assert.DoesNotContain(default, entries);
 	}
 }

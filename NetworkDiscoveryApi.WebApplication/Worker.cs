@@ -6,35 +6,38 @@ namespace NetworkDiscoveryApi.WebApplication;
 public class Worker : BackgroundService
 {
 	private readonly ILogger<Worker> _logger;
-	private readonly IMemoryCache _memoryCache;
-	private readonly Helpers.SSH.IService _service;
+	private readonly Services.IMemoryCacheService<Services.Models.DhcpLease> _memoryCacheService;
+	private readonly Services.IRouterService _routerService;
 
-	public Worker(ILogger<Worker> logger, IMemoryCache memoryCache, Helpers.SSH.IService service)
+	public Worker(
+		ILogger<Worker> logger,
+		Services.IMemoryCacheService<Services.Models.DhcpLease> memoryCacheService,
+		Services.IRouterService routerService)
 	{
 		_logger = Guard.Argument(logger).NotNull().Value;
-		_memoryCache = Guard.Argument(memoryCache).NotNull().Value;
-		_service = Guard.Argument(service).NotNull().Value;
+		_memoryCacheService = Guard.Argument(memoryCacheService).NotNull().Value;
+		_routerService = Guard.Argument(routerService).NotNull().Value;
 	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		while (!stoppingToken.IsCancellationRequested)
 		{
-			(_memoryCache as MemoryCache)?.Compact(1d);
+			(_memoryCacheService as MemoryCache)?.Compact(1d);
 
 			_logger.LogInformation("{now} fetching", DateTime.UtcNow.ToString("O"));
 			var soonest = DateTime.MaxValue;
-			var leases = _service.GetDhcpLeasesAsync();
+			var leases = _routerService.GetLeasesAsync();
 
 			await foreach (var lease in leases)
 			{
-				var (expiry, mac, ip, hostname, _) = lease;
+				var (expiry, mac, ip, hostname, alias) = lease;
 
-				foreach (var key in new object?[3] { mac, ip, hostname, })
+				foreach (var key in new object?[4] { alias, hostname, ip, mac, })
 				{
 					if (key is not null)
 					{
-						_memoryCache.Set(key, lease, absoluteExpiration: expiry);
+						_memoryCacheService.Set(key, lease, expiration: expiry);
 					}
 				}
 

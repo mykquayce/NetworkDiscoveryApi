@@ -1,4 +1,5 @@
 using IdentityModel.Client;
+using System.Web;
 using Xunit;
 
 namespace NetworkDiscoveryApi.WebApplication.Tests;
@@ -17,16 +18,19 @@ public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>, IClassFi
 	public string? _accessToken;
 	public string AccessToken => _accessToken ??= _identityClient.GetAccessTokenAsync().GetAwaiter().GetResult();
 
-	[Fact]
-	public async Task GetDhcpLicenses()
+	[Theory]
+	[InlineData("vr front")]
+	[InlineData("VR FRONT")]
+	public async Task GetDhcpLicenseForAlias(string alias)
 	{
 		_httpClient.SetBearerToken(AccessToken);
 
-		var response = await _httpClient.GetStringAsync("/api/router");
+		var response = await _httpClient.GetStringAsync("/api/router/" + HttpUtility.UrlPathEncode(alias));
 
 		Assert.NotNull(response);
 		Assert.NotEmpty(response);
-		Assert.StartsWith("[", response);
+		Assert.StartsWith("{", response);
+		Assert.NotEqual("{}", response);
 	}
 
 	[Theory]
@@ -40,10 +44,11 @@ public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>, IClassFi
 	{
 		_httpClient.SetBearerToken(AccessToken);
 
-		var response = await _httpClient.GetStringAsync("/api/router/" + physicalAddressString);
+		var response = await _httpClient.GetStringAsync("/api/router/" + HttpUtility.UrlPathEncode(physicalAddressString));
 
 		Assert.NotNull(response);
 		Assert.NotEmpty(response);
 		Assert.StartsWith("{", response);
+		Assert.NotEqual("{}", response);
 	}
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetworkDiscoveryApi.Services;
+using NetworkDiscoveryApi.Services.Models;
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -12,34 +13,51 @@ namespace NetworkDiscoveryApi.WebApplication.Controllers;
 [Authorize]
 public class RouterController : ControllerBase
 {
-	private readonly IRouterService _routerService;
+	private readonly IMemoryCacheService<DhcpLease> _memoryCacheService;
 
-	public RouterController(IRouterService routerService)
+	public RouterController(IMemoryCacheService<DhcpLease> memoryCacheService)
 	{
-		_routerService = Guard.Argument(() => routerService).NotNull().Value;
+		_memoryCacheService = Guard.Argument(memoryCacheService).NotNull().Value;
 	}
 
 	[HttpGet]
-	[Route("{mac:length(12,17)}")]
-	public IActionResult Get(string mac)
+	[Route("{keyString:minlength(1)}")]
+	public IActionResult Get(string keyString)
 	{
-		if (!PhysicalAddress.TryParse(mac, out var physicalAddress))
+		object key;
 		{
-			return BadRequest(new { message = "unable to parse mac", mac, });
+			if (PhysicalAddress.TryParse(keyString, out var mac))
+			{
+				key = mac;
+			}
+			else if (IPAddress.TryParse(keyString, out var ip))
+			{
+				key = ip;
+			}
+			else
+			{
+				key = keyString.ToLowerInvariant();
+			}
 		}
 
 		try
 		{
-			var entry = _routerService.GetLeaseByPhysicalAddress(physicalAddress);
-			return Ok(entry);
+			var (expiry, mac, ip, hostname, alias) = _memoryCacheService.Get(key);
+			return Ok(new
+			{
+				ip = ip.ToString(),
+				mac = mac.ToString().ToLowerInvariant(),
+				hostname,
+				alias,
+			});
 		}
 		catch (ArgumentOutOfRangeException)
 		{
-			return NotFound(new { MAC = physicalAddress.ToString().ToLowerInvariant(), });
+			return NotFound(new { key = keyString, });
 		}
 		catch (Exception ex)
 		{
-			return StatusCode((int)HttpStatusCode.InternalServerError, new { MAC = physicalAddress.ToString().ToLowerInvariant(), ex.Message, });
+			return StatusCode((int)HttpStatusCode.InternalServerError, new { key = keyString, ex.Message, });
 		}
 	}
 }
