@@ -31,7 +31,7 @@ builder.Services
 
 builder.Services
 	.AddSingleton<IMemoryCache>(new MemoryCache(new MemoryCacheOptions()))
-	.AddTransient<IMemoryCacheService<NetworkDiscoveryApi.Services.Models.DhcpLease>, MemoryCacheService<NetworkDiscoveryApi.Services.Models.DhcpLease>>()
+	.AddTransient<IMemoryCacheService<Helpers.Networking.Models.DhcpLease>, MemoryCacheService<Helpers.Networking.Models.DhcpLease>>()
 	.AddTransient<IRouterService, RouterService>();
 
 builder.Services.AddControllers();

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetworkDiscoveryApi.Services;
-using NetworkDiscoveryApi.Services.Models;
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -13,9 +12,9 @@ namespace NetworkDiscoveryApi.WebApplication.Controllers;
 [Authorize]
 public class RouterController : ControllerBase
 {
-	private readonly IMemoryCacheService<DhcpLease> _memoryCacheService;
+	private readonly IMemoryCacheService<Helpers.Networking.Models.DhcpLease> _memoryCacheService;
 
-	public RouterController(IMemoryCacheService<DhcpLease> memoryCacheService)
+	public RouterController(IMemoryCacheService<Helpers.Networking.Models.DhcpLease> memoryCacheService)
 	{
 		_memoryCacheService = Guard.Argument(memoryCacheService).NotNull().Value;
 	}
@@ -42,13 +41,14 @@ public class RouterController : ControllerBase
 
 		try
 		{
-			var (expiry, mac, ip, hostname, alias) = _memoryCacheService.Get(key);
+			var (expiration, physicalAddress, ipAddress, hostName, identifier) = _memoryCacheService.Get(key);
 			return Ok(new
 			{
-				ip = ip.ToString(),
-				mac = mac.ToString().ToLowerInvariant(),
-				hostname,
-				alias,
+				expiration = expiration.ToString("O"),
+				ipAddress = ipAddress.ToString(),
+				physicalAddress = physicalAddress.ToString().ToLowerInvariant(),
+				hostName,
+				identifier,
 			});
 		}
 		catch (ArgumentOutOfRangeException)
