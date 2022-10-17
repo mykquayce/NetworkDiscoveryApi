@@ -118,4 +118,19 @@ public class MemoryCacheTests
 		Assert.True(keys[0].Equals(keys[1]));
 		Assert.True(Equals(keys[0], keys[1]));
 	}
+
+	[Theory]
+	[InlineData("key", "value")]
+	public void ClearTests(object key, string value)
+	{
+		using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
+		IMemoryCacheService<string> sut = new Concrete.MemoryCacheService<string>(memoryCache);
+		sut.Set(key, value, DateTime.UtcNow.AddMinutes(1));
+
+		testcode();
+		sut.Clear();
+		Assert.Throws<ArgumentOutOfRangeException>(testcode);
+
+		void testcode() => sut.Get(key);
+	}
 }

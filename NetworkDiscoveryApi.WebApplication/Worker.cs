@@ -30,30 +30,23 @@ public class Worker : BackgroundService
 	{
 		while (!stoppingToken.IsCancellationRequested)
 		{
-			(_memoryCacheService as MemoryCache)?.Compact(1d);
+			_memoryCacheService.Clear();
 
-			_logger.LogInformation("{now}: fetching", DateTime.UtcNow.ToString("O"));
+			_logger.LogInformation("{now:O}: fetching", DateTime.UtcNow);
 
+			var soonest = DateTime.MaxValue;
 			var leases = _routerService.GetLeasesAsync();
-			var soonest = await CacheLeasesAsync(leases);
 
-			_logger.LogInformation("{now}: waiting till {next}", DateTime.UtcNow.ToString("O"), soonest.ToString("O"));
+			await foreach (var lease in leases)
+			{
+				CacheLease(lease);
+				if (lease.Expiration < DateTime.MaxValue) { soonest = lease.Expiration; }
+			}
+
+			_logger.LogInformation("{now:O}: waiting till {next:O}", DateTime.UtcNow, soonest);
 
 			await Task.Delay((int)(soonest - DateTime.UtcNow).TotalMilliseconds, stoppingToken);
 		}
-	}
-
-	private async Task<DateTime> CacheLeasesAsync(IAsyncEnumerable<DhcpLease> leases)
-	{
-		var soonest = DateTime.MaxValue;
-
-		await foreach (var lease in leases)
-		{
-			CacheLease(lease);
-			if (lease.Expiration < soonest) soonest = lease.Expiration;
-		}
-
-		return soonest;
 	}
 
 	private void CacheLease(DhcpLease lease)
