@@ -29,7 +29,7 @@ public class MemoryCacheService<T> : IMemoryCacheService<T>
 	public void Set(object key, T value, DateTime expiration)
 	{
 		Guard.Argument(key).NotNull();
-		Guard.Argument(expiration).InRange(DateTime.UtcNow, DateTime.MaxValue);
+		Guard.Argument(expiration).InRange(DateTime.UtcNow.AddMinutes(-1), DateTime.MaxValue);
 
 		_memoryCache.Set(key, value, expiration);
 	}
