@@ -120,17 +120,27 @@ public class MemoryCacheTests
 	}
 
 	[Theory]
-	[InlineData("key", "value")]
-	public void ClearTests(object key, string value)
+	[InlineData("key1", "value1", "key2", "value2", "key3", "value3", "key4", "value4")]
+	public void ClearTests(params string[] kvps)
 	{
-		using IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
-		IMemoryCacheService<string> sut = new Concrete.MemoryCacheService<string>(memoryCache);
-		sut.Set(key, value, DateTime.UtcNow.AddMinutes(1));
+		// Arrange
+		IMemoryCache memoryCache;
+		{
+			var exipration = DateTime.UtcNow.AddDays(1);
+			memoryCache = new MemoryCache(new MemoryCacheOptions());
 
-		testcode();
-		sut.Clear();
-		Assert.Throws<ArgumentOutOfRangeException>(testcode);
+			foreach (var (key, value) in from a in kvps.Chunk(size: 2)
+										 select (a[0], a[1]))
+			{
+				memoryCache.Set(key, value, exipration);
+			}
+		}
 
-		void testcode() => sut.Get(key);
+		// Act, Assert
+		Assert.Equal(kvps.Length / 2, ((MemoryCache)memoryCache).Count);
+
+		((MemoryCache)memoryCache).Clear();
+
+		Assert.Equal(0, ((MemoryCache)memoryCache).Count);
 	}
 }

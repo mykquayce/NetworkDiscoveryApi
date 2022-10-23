@@ -8,7 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddHostedService<NetworkDiscoveryApi.WebApplication.Worker>();
+builder.Services
+	.AddHostedService<NetworkDiscoveryApi.WebApplication.Worker>()
+	.AddSingleton<NetworkDiscoveryApi.WebApplication.ICustomWorkerStarter, NetworkDiscoveryApi.WebApplication.Worker>();
 
 builder.Services
 	.AddAuthenticationAuthorization(builder.Configuration.GetSection("Identity"));

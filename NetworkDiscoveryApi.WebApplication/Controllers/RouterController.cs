@@ -12,11 +12,28 @@ namespace NetworkDiscoveryApi.WebApplication.Controllers;
 [Authorize]
 public class RouterController : ControllerBase
 {
+	private readonly ILogger<RouterController> _logger;
 	private readonly IMemoryCacheService<Helpers.Networking.Models.DhcpLease> _memoryCacheService;
+	private readonly ICustomWorkerStarter _hostedService;
 
-	public RouterController(IMemoryCacheService<Helpers.Networking.Models.DhcpLease> memoryCacheService)
+	public RouterController(
+		ILogger<RouterController> logger,
+		IMemoryCacheService<Helpers.Networking.Models.DhcpLease> memoryCacheService,
+		ICustomWorkerStarter hostedService)
 	{
 		_memoryCacheService = Guard.Argument(memoryCacheService).NotNull().Value;
+		_hostedService = Guard.Argument(hostedService).NotNull().Value;
+		_logger = Guard.Argument(logger).NotNull().Value;
+	}
+
+	[HttpPut]
+	[Route("reset")]
+	public async Task<IActionResult> Reset()
+	{
+		_logger.LogInformation("starting hosted service");
+		await _hostedService.StartAsync();
+		_logger.LogInformation("started hosted service");
+		return Ok();
 	}
 
 	[HttpGet]
@@ -42,6 +59,7 @@ public class RouterController : ControllerBase
 		try
 		{
 			var (expiration, physicalAddress, ipAddress, hostName, identifier) = _memoryCacheService.Get(key);
+			_logger.LogInformation("{key} resolved to {physicalAddress}, {ipAddress}", key, physicalAddress, ipAddress);
 			return Ok(new
 			{
 				expiration = expiration.ToString("O"),

@@ -1,12 +1,11 @@
 ﻿using Dawn;
 using Helpers.Networking.Models;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.Net.NetworkInformation;
 
 namespace NetworkDiscoveryApi.WebApplication;
 
-public class Worker : BackgroundService
+public class Worker : BackgroundService, ICustomWorkerStarter
 {
 	private readonly IDictionary<PhysicalAddress, ICollection<string>> _aliasesLookup;
 	private readonly ILogger<Worker> _logger;
