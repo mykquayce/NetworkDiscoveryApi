@@ -10,7 +10,15 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: /run/secrets/localhost.crt
       ASPNETCORE_HTTPS_PORT: '443'
       ASPNETCORE_URLS: https://+
-      Identity:Authority: https://identityserver
+      Aliases:keylight: 3c6a9d14d765
+      Aliases:lightstrip: 3c6a9d187071
+      Aliases:vr front: 28ee52eb0aa4
+      Aliases:vr rear: 003192e1a474
+      Aliases:philipshue: ecb5fa18e324
+      Aliases:philipshuebridge: ecb5fa18e324
+      Aliases:globalcache: 000c1e059cad
+      Aliases:irblaster: 000c1e059cad
+      Identity:Authority: https://identityserver/
       Identity:Scope: networkdiscovery
       Router:Host: 192.168.1.10
       Router:PathToPrivateKey: /run/secrets/id_rsa
