@@ -25,7 +25,7 @@ public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>, IClassFi
 	{
 		_httpClient.SetBearerToken(AccessToken);
 
-		var response = await _httpClient.GetStringAsync("/api/router/" + HttpUtility.UrlPathEncode(alias));
+		var response = await _httpClient.GetStringAsync("api/router/" + HttpUtility.UrlPathEncode(alias));
 
 		Assert.NotNull(response);
 		Assert.NotEmpty(response);
@@ -44,7 +44,7 @@ public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>, IClassFi
 	{
 		_httpClient.SetBearerToken(AccessToken);
 
-		var response = await _httpClient.GetStringAsync("/api/router/" + HttpUtility.UrlPathEncode(physicalAddressString));
+		var response = await _httpClient.GetStringAsync("api/router/" + HttpUtility.UrlPathEncode(physicalAddressString));
 
 		Assert.NotNull(response);
 		Assert.NotEmpty(response);

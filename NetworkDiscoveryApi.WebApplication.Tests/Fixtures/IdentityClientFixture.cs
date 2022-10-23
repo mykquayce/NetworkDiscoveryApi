@@ -4,7 +4,7 @@ namespace NetworkDiscoveryApi.WebApplication.Tests.Fixtures;
 
 public sealed class IdentityClientFixture : IDisposable
 {
-	private static readonly Uri _authority = new("https://identityserver");
+	private static readonly Uri _authority = new("https://identityserver/");
 	private const string _cliendId = "elgatoapi";
 	private const string _clientSecret = "8556e52c6ab90d042bb83b3f0c8894498beeb65cf908f519a2152aceb131d3ee";
 	private const string _scope = "networkdiscovery";
