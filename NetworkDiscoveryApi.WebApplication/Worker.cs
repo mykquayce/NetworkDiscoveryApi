@@ -52,6 +52,11 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 	{
 		var ok = _aliasesLookup.TryGetValue(lease.PhysicalAddress, out var aliases);
 
+		// log
+		var values = new object?[] { lease.HostName?.ToLowerInvariant(), lease.IPAddress, lease.PhysicalAddress, };
+		_logger.LogInformation("caching ({values})", string.Join(',', ok ? values.Union(aliases!) : values));
+
+		// cache the aliases
 		if (ok)
 		{
 			foreach (var alias in aliases!)
@@ -60,9 +65,10 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 			}
 		}
 
+		// cache the mac, ip, and hostname
 		cache(lease.PhysicalAddress);
 		cache(lease.IPAddress);
-		if (!string.IsNullOrWhiteSpace(lease.HostName)) cache(lease.HostName);
+		if (!string.IsNullOrWhiteSpace(lease.HostName)) cache(lease.HostName.ToLowerInvariant());
 
 		void cache(object key) => _memoryCacheService.Set(key, lease, lease.Expiration);
 	}
