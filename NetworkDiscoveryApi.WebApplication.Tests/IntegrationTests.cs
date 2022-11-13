@@ -1,4 +1,5 @@
 using IdentityModel.Client;
+using System.Text.Json;
 using System.Web;
 using Xunit;
 
@@ -50,5 +51,25 @@ public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>, IClassFi
 		Assert.NotEmpty(response);
 		Assert.StartsWith("{", response);
 		Assert.NotEqual("{}", response);
+	}
+
+	[Theory]
+	[InlineData("api/router")]
+	public async Task GetAllDhcpLeases(string requestUri)
+	{
+		_httpClient.SetBearerToken(AccessToken);
+
+		var response = await _httpClient.GetStringAsync(requestUri);
+
+		Assert.NotNull(response);
+		Assert.NotEmpty(response);
+		Assert.StartsWith("[", response);
+		Assert.NotEqual("[]", response);
+
+		ICollection<string> aliases = JsonSerializer.Deserialize<string[]>(response)!;
+
+		Assert.NotEmpty(aliases);
+		Assert.All(aliases, Assert.NotNull);
+		Assert.All(aliases, Assert.NotEmpty);
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using Dawn;
 using Helpers.Networking.Models;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.Net.NetworkInformation;
 
@@ -9,32 +10,32 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 {
 	private readonly IDictionary<PhysicalAddress, ICollection<string>> _aliasesLookup;
 	private readonly ILogger<Worker> _logger;
-	private readonly Services.IMemoryCacheService<DhcpLease> _memoryCacheService;
-	private readonly Services.IRouterService _routerService;
+	private readonly IServiceProvider _serviceProvider;
+	private readonly IEnumerableMemoryCache _memoryCache;
 
 	public Worker(
 		ILogger<Worker> logger,
-		Services.IMemoryCacheService<DhcpLease> memoryCacheService,
-		Services.IRouterService routerService,
-		IOptions<IReadOnlyDictionary<string, PhysicalAddress>> aliasesOptions)
+		IEnumerableMemoryCache memoryCache,
+		IOptions<IReadOnlyDictionary<string, PhysicalAddress>> aliasesOptions,
+		IServiceProvider serviceProvider)
 	{
 		_aliasesLookup = Guard.Argument(aliasesOptions).NotNull().Wrap(o => o.Value)
 			.NotNull().NotEmpty().Value.Invert();
 		_logger = Guard.Argument(logger).NotNull().Value;
-		_memoryCacheService = Guard.Argument(memoryCacheService).NotNull().Value;
-		_routerService = Guard.Argument(routerService).NotNull().Value;
+		_memoryCache = Guard.Argument(memoryCache).NotNull().Value;
+		_serviceProvider = Guard.Argument(serviceProvider).NotNull().Value;
 	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
 		while (!stoppingToken.IsCancellationRequested)
 		{
-			_memoryCacheService.Clear();
+			_memoryCache.Clear();
 
 			_logger.LogInformation("{now:O}: fetching", DateTime.UtcNow);
 
 			var soonest = DateTime.MaxValue;
-			var leases = _routerService.GetLeasesAsync();
+			var leases = GetLeasesAsync();
 
 			await foreach (var lease in leases)
 			{
@@ -48,13 +49,24 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 		}
 	}
 
+	private IAsyncEnumerable<DhcpLease> GetLeasesAsync()
+	{
+		var service = _serviceProvider.GetRequiredService<Services.IRouterService>();
+		return service.GetLeasesAsync();
+	}
+
 	private void CacheLease(DhcpLease lease)
 	{
+		var (expiration, mac, ip, host, _) = lease;
+
+		// check for aliases
 		var ok = _aliasesLookup.TryGetValue(lease.PhysicalAddress, out var aliases);
 
 		// log
-		var values = new object?[] { lease.HostName?.ToLowerInvariant(), lease.IPAddress, lease.PhysicalAddress, };
-		_logger.LogInformation("caching ({values})", string.Join(',', ok ? values.Union(aliases!) : values));
+		{
+			var values = new object?[] { host?.ToLowerInvariant(), ip, mac, }.Union(aliases ?? Array.Empty<string>());
+			_logger.LogInformation("caching ({values})", string.Join(',', values));
+		}
 
 		// cache the aliases
 		if (ok)
@@ -66,10 +78,10 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 		}
 
 		// cache the mac, ip, and hostname
-		cache(lease.PhysicalAddress);
-		cache(lease.IPAddress);
-		if (!string.IsNullOrWhiteSpace(lease.HostName)) cache(lease.HostName.ToLowerInvariant());
+		cache(mac);
+		cache(ip);
+		if (!string.IsNullOrWhiteSpace(host)) cache(host.ToLowerInvariant());
 
-		void cache(object key) => _memoryCacheService.Set(key, lease, lease.Expiration);
+		void cache(object key) => _memoryCache.Set(key, lease, expiration);
 	}
 }

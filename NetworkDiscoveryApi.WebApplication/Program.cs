@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NetworkDiscoveryApi.Services;
 using NetworkDiscoveryApi.Services.Concrete;
@@ -32,8 +33,7 @@ builder.Services
 	.AddSSH(builder.Configuration.GetSection("Router"));
 
 builder.Services
-	.AddSingleton<IMemoryCache>(new MemoryCache(new MemoryCacheOptions()))
-	.AddTransient<IMemoryCacheService<Helpers.Networking.Models.DhcpLease>, MemoryCacheService<Helpers.Networking.Models.DhcpLease>>()
+	.AddEnumerableMemoryCache(new MemoryCacheOptions())
 	.AddTransient<IRouterService, RouterService>();
 
 builder.Services.AddControllers();

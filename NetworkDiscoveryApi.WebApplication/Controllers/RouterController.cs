@@ -1,7 +1,7 @@
 ﻿using Dawn;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NetworkDiscoveryApi.Services;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -13,15 +13,15 @@ namespace NetworkDiscoveryApi.WebApplication.Controllers;
 public class RouterController : ControllerBase
 {
 	private readonly ILogger<RouterController> _logger;
-	private readonly IMemoryCacheService<Helpers.Networking.Models.DhcpLease> _memoryCacheService;
+	private readonly IEnumerableMemoryCache _memoryCache;
 	private readonly ICustomWorkerStarter _hostedService;
 
 	public RouterController(
 		ILogger<RouterController> logger,
-		IMemoryCacheService<Helpers.Networking.Models.DhcpLease> memoryCacheService,
+		IEnumerableMemoryCache memoryCache,
 		ICustomWorkerStarter hostedService)
 	{
-		_memoryCacheService = Guard.Argument(memoryCacheService).NotNull().Value;
+		_memoryCache = Guard.Argument(memoryCache).NotNull().Value;
 		_hostedService = Guard.Argument(hostedService).NotNull().Value;
 		_logger = Guard.Argument(logger).NotNull().Value;
 	}
@@ -56,9 +56,11 @@ public class RouterController : ControllerBase
 			}
 		}
 
-		try
+		var ok = _memoryCache.TryGetValue<Helpers.Networking.Models.DhcpLease>(key, out var lease);
+
+		if (ok)
 		{
-			var (expiration, physicalAddress, ipAddress, hostName, identifier) = _memoryCacheService.Get(key);
+			var (expiration, physicalAddress, ipAddress, hostName, identifier) = lease!;
 			_logger.LogInformation("{key} resolved to {physicalAddress}, {ipAddress}", key, physicalAddress, ipAddress);
 			return Ok(new
 			{
@@ -69,13 +71,20 @@ public class RouterController : ControllerBase
 				identifier,
 			});
 		}
-		catch (ArgumentOutOfRangeException)
+
+		return NotFound(new { key = keyString, });
+	}
+
+	[HttpGet]
+	public IActionResult Get()
+	{
+		var keys = _memoryCache.Keys;
+
+		if (keys.Any())
 		{
-			return NotFound(new { key = keyString, });
+			return Ok(keys.Select(o => o.ToString()));
 		}
-		catch (Exception ex)
-		{
-			return StatusCode((int)HttpStatusCode.InternalServerError, new { key = keyString, ex.Message, });
-		}
+
+		return NoContent();
 	}
 }
