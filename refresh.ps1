@@ -8,8 +8,9 @@ $target = docker image inspect --format '{{.Created}}' eassbhhtgu/networkdiscove
 
 if ($base1 -gt $target -or $base2 -gt $target) {
 
+	$secret = 'id=ca_crt,src={0}\.aspnet\https\ca.crt' -f ${env:userprofile}
 	docker build `
-		--secret id=ca_crt,src=${env:userprofile}\.aspnet\https\ca.crt `
+	--secret $secret `
 		--tag eassbhhtgu/networkdiscoveryapi:latest `
 		.
 	if (!$?) { exit 1; }

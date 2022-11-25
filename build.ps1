@@ -9,8 +9,9 @@ foreach ($image in $images) {
 }
 
 # build
+$secret = 'id=ca_crt,src={0}\.aspnet\https\ca.crt' -f ${env:userprofile}
 docker build `
-	--secret id=ca_crt,src=${env:userprofile}\.aspnet\https\ca.crt `
+	--secret $secret `
 	--tag eassbhhtgu/networkdiscoveryapi:latest `
 	.
 if (!$?) { return; }
