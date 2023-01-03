@@ -1,9 +1,6 @@
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using NetworkDiscoveryApi.Services;
 using NetworkDiscoveryApi.Services.Concrete;
-using System.Net.NetworkInformation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,17 +14,7 @@ builder.Services
 	.AddAuthenticationAuthorization(builder.Configuration.GetSection("Identity"));
 
 builder.Services
-	.AddSingleton<IOptions<IReadOnlyDictionary<string, PhysicalAddress>>>(provider =>
-	{
-		var dictionary = new Dictionary<string, string>();
-		builder.Configuration.GetSection("Aliases").Bind(dictionary);
-		var aliases = dictionary.ToDictionary(
-				kvp => kvp.Key,
-				kvp => PhysicalAddress.Parse(kvp.Value),
-				StringComparer.OrdinalIgnoreCase)
-			.AsReadOnly();
-		return Options.Create(aliases);
-	});
+	.Configure<NetworkDiscoveryApi.WebApplication.Models.AliasesLookup>(builder.Configuration);
 
 builder.Services
 	.AddSSH(builder.Configuration.GetSection("Router"));
@@ -49,8 +36,6 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

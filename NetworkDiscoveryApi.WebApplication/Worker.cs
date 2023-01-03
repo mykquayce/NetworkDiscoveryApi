@@ -16,11 +16,12 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 	public Worker(
 		ILogger<Worker> logger,
 		IEnumerableMemoryCache memoryCache,
-		IOptions<IReadOnlyDictionary<string, PhysicalAddress>> aliasesOptions,
+		IOptions<Models.AliasesLookup> aliasesOptions,
 		IServiceProvider serviceProvider)
 	{
-		_aliasesLookup = Guard.Argument(aliasesOptions).NotNull().Wrap(o => o.Value)
-			.NotNull().NotEmpty().Value.Invert();
+		IEnumerable<KeyValuePair<string, PhysicalAddress>> kvps = Guard.Argument(aliasesOptions).NotNull().Wrap(o => o.Value)
+			.NotNull().NotEmpty().Value;
+		_aliasesLookup = kvps.Invert();
 		_logger = Guard.Argument(logger).NotNull().Value;
 		_memoryCache = Guard.Argument(memoryCache).NotNull().Value;
 		_serviceProvider = Guard.Argument(serviceProvider).NotNull().Value;

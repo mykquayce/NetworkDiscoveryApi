@@ -31,24 +31,20 @@ public class ConfigurationTests
 		}
 
 		using var serviceProvider = new ServiceCollection()
-			//.Configure<Dictionary<string, string[]>>(configuration)
-			.AddSingleton<IOptions<IReadOnlyDictionary<string, PhysicalAddress>>>(provider =>
-			{
-				var dictionary = new Dictionary<string, string>();
-				configuration.Bind(dictionary);
-				var aliases = dictionary.ToDictionary(
-						kvp => kvp.Key,
-						kvp => PhysicalAddress.Parse(kvp.Value),
-						StringComparer.OrdinalIgnoreCase)
-					.AsReadOnly();
-				return Options.Create(aliases);
-			})
+			.Configure<Models.AliasesLookup>(configuration)
 			.BuildServiceProvider();
 
-		var actual = serviceProvider.GetRequiredService<IOptions<IReadOnlyDictionary<string, PhysicalAddress>>>();
+		var options = serviceProvider.GetRequiredService<IOptions<Models.AliasesLookup>>();
 
-		Assert.NotNull(actual);
-		Assert.NotNull(actual.Value);
-		Assert.NotEmpty(actual.Value);
+		Assert.NotNull(options);
+		Assert.NotNull(options.Value);
+
+		var aliases = options.Value;
+		Assert.NotEmpty(aliases);
+
+		foreach (var (_, mac) in aliases)
+		{
+			Assert.NotEqual(PhysicalAddress.None, mac);
+		}
 	}
 }
