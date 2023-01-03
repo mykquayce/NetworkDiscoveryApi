@@ -31,22 +31,23 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 	{
 		while (!stoppingToken.IsCancellationRequested)
 		{
+			var now = DateTime.UtcNow;
 			_memoryCache.Clear();
 
-			_logger.LogInformation("{now:O}: fetching", DateTime.UtcNow);
+			_logger.LogInformation("{now:O}: fetching", now);
 
-			var soonest = DateTime.MaxValue;
+			var expirations = new List<TimeSpan> { TimeSpan.FromHours(1), };
 			var leases = GetLeasesAsync();
 
 			await foreach (var lease in leases)
 			{
 				CacheLease(lease);
-				if (lease.Expiration < DateTime.MaxValue) { soonest = lease.Expiration; }
+				expirations.Add(lease.Expiration - now);
 			}
 
-			_logger.LogInformation("{now:O}: waiting till {next:O}", DateTime.UtcNow, soonest);
-
-			await Task.Delay((int)(soonest - DateTime.UtcNow).TotalMilliseconds, stoppingToken);
+			var soonest = expirations.Min();
+			_logger.LogInformation("{now:O}: sleeping for {soonest:F0}min(s)", now, Math.Round(soonest.TotalMinutes));
+			await Task.Delay(millisecondsDelay: (int)soonest.TotalMilliseconds, stoppingToken);
 		}
 	}
 
