@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Helpers.Common" Version="1.2.7" />
-    <PackageReference Include="Helpers.Identity" Version="1.0.9-preview" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Helpers.Identity" Version="1.0.10-preview" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
