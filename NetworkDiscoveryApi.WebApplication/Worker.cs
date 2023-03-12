@@ -1,14 +1,11 @@
 ﻿using Dawn;
 using Helpers.Networking.Models;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using System.Net.NetworkInformation;
 
 namespace NetworkDiscoveryApi.WebApplication;
 
 public class Worker : BackgroundService, ICustomWorkerStarter
 {
-	private readonly IDictionary<PhysicalAddress, ICollection<string>> _aliasesLookup;
 	private readonly ILogger<Worker> _logger;
 	private readonly IServiceProvider _serviceProvider;
 	private readonly IEnumerableMemoryCache _memoryCache;
@@ -16,12 +13,8 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 	public Worker(
 		ILogger<Worker> logger,
 		IEnumerableMemoryCache memoryCache,
-		IOptions<Models.AliasesLookup> aliasesOptions,
 		IServiceProvider serviceProvider)
 	{
-		IEnumerable<KeyValuePair<string, PhysicalAddress>> kvps = Guard.Argument(aliasesOptions).NotNull().Wrap(o => o.Value)
-			.NotNull().NotEmpty().Value;
-		_aliasesLookup = kvps.Invert();
 		_logger = Guard.Argument(logger).NotNull().Value;
 		_memoryCache = Guard.Argument(memoryCache).NotNull().Value;
 		_serviceProvider = Guard.Argument(serviceProvider).NotNull().Value;
@@ -61,22 +54,10 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 	{
 		var (expiration, mac, ip, host, _) = lease;
 
-		// check for aliases
-		var ok = _aliasesLookup.TryGetValue(lease.PhysicalAddress, out var aliases);
-
 		// log
 		{
-			var values = new object?[] { host?.ToLowerInvariant(), ip, mac, }.Union(aliases ?? Array.Empty<string>());
+			var values = new object?[] { host?.ToLowerInvariant(), ip, mac, };
 			_logger.LogInformation("caching ({values})", string.Join(',', values));
-		}
-
-		// cache the aliases
-		if (ok)
-		{
-			foreach (var alias in aliases!)
-			{
-				cache(alias);
-			}
 		}
 
 		// cache the mac, ip, and hostname

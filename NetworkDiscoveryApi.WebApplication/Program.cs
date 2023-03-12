@@ -14,9 +14,6 @@ builder.Services
 	.AddAuthenticationAuthorization(builder.Configuration.GetSection("Identity"));
 
 builder.Services
-	.Configure<NetworkDiscoveryApi.WebApplication.Models.AliasesLookup>(builder.Configuration.GetSection("Aliases"));
-
-builder.Services
 	.AddSSH(builder.Configuration.GetSection("Router"));
 
 builder.Services
