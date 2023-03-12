@@ -20,12 +20,12 @@ public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>, IClassFi
 	public string AccessToken => _accessToken ??= _identityClient.GetAccessTokenAsync().GetAwaiter().GetResult();
 
 	[Theory]
-	[InlineData("3c:6a:9d:14:d7:65")]
-	[InlineData("3C:6A:9D:14:D7:65")]
-	[InlineData("3c6a9d14d765")]
-	[InlineData("3c-6a-9d-14-d7-65")]
-	[InlineData("3C6A9D14D765")]
-	[InlineData("3C-6A-9D-14-D7-65")]
+	[InlineData("7e:a7:b0:32:8b:3e")]
+	[InlineData("7E:A7:B0:32:8B:3E")]
+	[InlineData("7ea7b0328b3e")]
+	[InlineData("7e-a7-b0-32-8b-3e")]
+	[InlineData("7EA7B0328B3E")]
+	[InlineData("7E-A7-B0-32-8B-3E")]
 	public async Task GetDhcpLicenseForMac(string physicalAddressString)
 	{
 		_httpClient.SetBearerToken(AccessToken);
