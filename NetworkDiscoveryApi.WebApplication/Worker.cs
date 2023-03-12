@@ -45,7 +45,7 @@ public class Worker : BackgroundService, ICustomWorkerStarter
 				expirations.Add(lease.Expiration - now);
 			}
 
-			var soonest = expirations.Min();
+			var soonest = expirations.Min().Clamp(TimeSpan.FromMinutes(5), TimeSpan.FromHours(1));
 			_logger.LogInformation("{now:O}: sleeping for {soonest:F0}min(s)", now, Math.Round(soonest.TotalMinutes));
 			await Task.Delay(millisecondsDelay: (int)soonest.TotalMilliseconds, stoppingToken);
 		}
