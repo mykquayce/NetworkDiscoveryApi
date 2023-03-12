@@ -42,6 +42,7 @@ public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>, IClassFi
 	[InlineData("api/router")]
 	public async Task GetAllDhcpLeases(string requestUri)
 	{
+		DateTime min = DateTime.UtcNow, max = min.AddDays(1);
 		_httpClient.SetBearerToken(AccessToken);
 
 		var response = await _httpClient.GetStringAsync(requestUri);
@@ -51,10 +52,11 @@ public class IntegrationTests : IClassFixture<Fixtures.WebHostFixture>, IClassFi
 		Assert.StartsWith("[", response);
 		Assert.NotEqual("[]", response);
 
-		ICollection<string> aliases = JsonSerializer.Deserialize<string[]>(response)!;
+		var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, };
+		var leases = JsonSerializer.Deserialize<Helpers.Networking.Models.DhcpLease[]>(response, options)!;
 
-		Assert.NotEmpty(aliases);
-		Assert.All(aliases, Assert.NotNull);
-		Assert.All(aliases, Assert.NotEmpty);
+		Assert.NotEmpty(leases);
+		Assert.All(leases, Assert.NotNull);
+		Assert.All(leases, l => Assert.InRange(l.Expiration, min, max));
 	}
 }

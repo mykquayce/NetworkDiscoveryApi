@@ -78,11 +78,11 @@ public class RouterController : ControllerBase
 	[HttpGet]
 	public IActionResult Get()
 	{
-		var keys = _memoryCache.Keys;
+		var leases = _memoryCache.Values.Distinct().ToArray();
 
-		if (keys.Any())
+		if (leases.Any())
 		{
-			return Ok(keys.Select(o => o.ToString()));
+			return Ok(leases);
 		}
 
 		return NoContent();
