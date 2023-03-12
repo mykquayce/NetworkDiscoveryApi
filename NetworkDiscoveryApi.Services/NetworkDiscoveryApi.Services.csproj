@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Helpers.Networking.Models" Version="1.1.24" />
-    <PackageReference Include="Helpers.SSH" Version="1.3.12" />
+    <PackageReference Include="Helpers.Networking.Models" Version="1.1.25" />
+    <PackageReference Include="Helpers.SSH" Version="1.3.13" />
   </ItemGroup>
 
 </Project>
